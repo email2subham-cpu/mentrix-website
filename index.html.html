@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mentrix — WBCHSE MCQ Practice Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --indigo:   #6366f1;
+    --indigo-d: #4f46e5;
+    --indigo-l: #eef2ff;
+    --ink:      #0c1628;
+    --ink2:     #1e293b;
+    --muted:    #64748b;
+    --border:   #e2e8f0;
+    --cream:    #f8fafc;
+    --white:    #ffffff;
+    --green:    #16a34a;
+    --amber:    #d97706;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Inter', sans-serif; background: var(--white); color: var(--ink); overflow-x: hidden; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 5rem;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo { display: flex; align-items: baseline; gap: 0; text-decoration: none; }
+  .nav-logo .m { font-size: 1.5rem; font-weight: 900; color: var(--indigo); font-style: italic; line-height: 1; }
+  .nav-logo .rest { font-size: 1.3rem; font-weight: 700; color: var(--ink); letter-spacing: -0.02em; }
+
+  nav ul { list-style: none; display: flex; gap: 2rem; }
+  nav ul a { text-decoration: none; color: var(--muted); font-size: 0.88rem; font-weight: 500; transition: color 0.2s; }
+  nav ul a:hover { color: var(--indigo); }
+
+  .nav-cta {
+    background: var(--indigo); color: white !important;
+    padding: 0.55rem 1.3rem; border-radius: 8px;
+    font-weight: 700 !important; font-size: 0.85rem !important;
+    transition: background 0.2s !important;
+  }
+  .nav-cta:hover { background: var(--indigo-d) !important; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid; grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 8rem 5rem 5rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+    position: relative; overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute; top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
+    border-radius: 50%; pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: var(--indigo-l); border: 1px solid rgba(99,102,241,0.3);
+    color: var(--indigo); padding: 0.35rem 1rem; border-radius: 100px;
+    font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; margin-bottom: 1.6rem; width: fit-content;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .hero-badge::before { content: '●'; font-size: 0.45rem; animation: pulse 2s infinite; }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+  .hero-title {
+    font-size: clamp(2.8rem, 4.5vw, 5rem);
+    font-weight: 900; line-height: 1.05;
+    letter-spacing: -0.03em; margin-bottom: 1.2rem;
+    animation: fadeUp 0.5s 0.1s ease both;
+  }
+
+  .hero-title .accent { color: var(--indigo); }
+
+  .hero-sub {
+    font-size: 1.1rem; line-height: 1.7; color: var(--muted);
+    max-width: 460px; margin-bottom: 2.2rem;
+    animation: fadeUp 0.5s 0.2s ease both;
+  }
+
+  .hero-actions { display: flex; gap: 0.8rem; flex-wrap: wrap; animation: fadeUp 0.5s 0.3s ease both; }
+
+  .btn-primary {
+    background: var(--indigo); color: white; border: none;
+    padding: 0.9rem 2rem; border-radius: 8px; font-size: 0.95rem;
+    font-weight: 700; cursor: pointer; text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+    display: inline-flex; align-items: center; gap: 0.4rem;
+  }
+  .btn-primary:hover { background: var(--indigo-d); transform: translateY(-2px); }
+
+  .btn-outline {
+    border: 2px solid var(--border); color: var(--ink2);
+    background: white; padding: 0.9rem 1.8rem; border-radius: 8px;
+    font-size: 0.95rem; font-weight: 600; cursor: pointer;
+    text-decoration: none; transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 0.4rem;
+  }
+  .btn-outline:hover { border-color: var(--indigo); color: var(--indigo); }
+
+  /* ── PHONE MOCKUP ── */
+  .hero-visual {
+    display: flex; justify-content: center; align-items: center;
+    position: relative; animation: fadeUp 0.7s 0.2s ease both;
+  }
+
+  .phone {
+    width: 270px; background: var(--ink); border-radius: 40px;
+    padding: 10px; box-shadow: 0 50px 100px rgba(12,22,40,0.3), 0 20px 40px rgba(99,102,241,0.15);
+    position: relative; z-index: 2;
+  }
+
+  .phone-screen {
+    background: #f8fafc; border-radius: 32px; overflow: hidden;
+    height: 510px; display: flex; flex-direction: column;
+  }
+
+  .phone-header {
+    background: var(--indigo); padding: 1rem 1.1rem;
+  }
+
+  .phone-header .app-logo { display: flex; align-items: baseline; gap: 0; }
+  .phone-header .app-logo .m { font-size: 1.1rem; font-weight: 900; color: white; font-style: italic; }
+  .phone-header .app-logo .rest { font-size: 0.95rem; font-weight: 700; color: rgba(255,255,255,0.9); }
+  .phone-header .sub { font-size: 0.65rem; color: rgba(255,255,255,0.65); margin-top: 0.1rem; }
+
+  .phone-body { padding: 0.9rem; flex: 1; overflow: hidden; }
+
+  .q-card {
+    background: white; border-radius: 10px; padding: 0.9rem;
+    margin-bottom: 0.7rem; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  .q-num { font-size: 0.62rem; font-weight: 700; color: var(--indigo); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.4rem; }
+
+  .q-text { font-family: 'Noto Sans Bengali', serif; font-size: 0.78rem; line-height: 1.55; color: var(--ink); margin-bottom: 0.75rem; }
+
+  .options { display: grid; gap: 0.35rem; }
+
+  .option {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.42rem 0.65rem; border-radius: 7px;
+    border: 1.5px solid var(--border); font-size: 0.7rem;
+    font-family: 'Noto Sans Bengali', serif; color: var(--ink2);
+    background: white;
+  }
+
+  .option.correct { border-color: var(--green); background: #f0fdf4; color: var(--green); font-weight: 700; }
+  .option.wrong   { border-color: #dc2626; background: #fef2f2; color: #dc2626; }
+
+  .opt-dot {
+    width: 15px; height: 15px; border-radius: 50%;
+    border: 2px solid currentColor; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 7px; font-style: normal;
+  }
+
+  .option.correct .opt-dot::after { content: '✓'; }
+  .option.wrong   .opt-dot::after { content: '✗'; }
+
+  .phone-stats {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    padding: 0.7rem 0.9rem; border-top: 1px solid var(--border);
+  }
+
+  .stat-item { text-align: center; }
+  .stat-val  { font-size: 0.95rem; font-weight: 800; color: var(--indigo); }
+  .stat-lbl  { font-size: 0.58rem; color: var(--muted); margin-top: 0.1rem; }
+
+  .float-card {
+    position: absolute; background: white; border-radius: 12px;
+    padding: 0.6rem 0.9rem; box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    font-size: 0.75rem; font-weight: 600;
+    display: flex; align-items: center; gap: 0.4rem; white-space: nowrap;
+  }
+
+  .float-card.tr { top: 30px; right: -20px; animation: float 3s ease-in-out infinite; }
+  .float-card.bl { bottom: 70px; left: -30px; animation: float 3s 1.5s ease-in-out infinite; }
+
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+  /* ── STATS BAR ── */
+  .stats-bar {
+    background: var(--ink); padding: 2rem 5rem;
+    display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem;
+  }
+
+  .stats-bar .s { text-align: center; border-right: 1px solid rgba(255,255,255,0.08); }
+  .stats-bar .s:last-child { border-right: none; }
+  .stats-bar .n { font-size: 2.2rem; font-weight: 900; color: var(--indigo); display: block; font-style: italic; }
+  .stats-bar .l { font-size: 0.78rem; color: rgba(255,255,255,0.45); margin-top: 0.2rem; }
+
+  /* ── SECTIONS ── */
+  .section { padding: 6rem 5rem; }
+  .section.alt { background: var(--cream); }
+  .section.dark { background: var(--ink); }
+
+  .section-eyebrow {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--indigo); margin-bottom: 0.7rem;
+  }
+
+  .section-title {
+    font-size: clamp(1.8rem, 3vw, 2.8rem); font-weight: 900;
+    letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 0.9rem;
+  }
+
+  .section-sub { font-size: 1rem; color: var(--muted); max-width: 520px; line-height: 1.7; margin-bottom: 3rem; }
+
+  .dark .section-title { color: white; }
+  .dark .section-eyebrow { color: #818cf8; }
+  .dark .section-sub { color: rgba(255,255,255,0.5); }
+
+  /* ── SUBJECTS GRID ── */
+  .subjects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px,1fr)); gap: 1rem; }
+
+  .subject-card {
+    background: white; border: 1.5px solid var(--border); border-radius: 14px;
+    padding: 1.4rem; cursor: pointer; transition: all 0.25s; position: relative; overflow: hidden;
+  }
+
+  .subject-card::after {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--sc, var(--indigo)); transform: scaleX(0); transform-origin: left; transition: transform 0.3s;
+  }
+
+  .subject-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.08); }
+  .subject-card:hover::after { transform: scaleX(1); }
+
+  .subject-icon { font-size: 2rem; margin-bottom: 0.7rem; }
+  .subject-name { font-size: 0.95rem; font-weight: 700; color: var(--ink); margin-bottom: 0.2rem; }
+  .subject-stream { font-size: 0.72rem; color: var(--muted); }
+  .subject-count { font-size: 0.7rem; font-weight: 600; color: var(--indigo); margin-top: 0.5rem; }
+
+  /* ── FEATURES GRID ── */
+  .features-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.2rem; }
+
+  .feature-card {
+    border: 1px solid rgba(255,255,255,0.08); border-radius: 14px;
+    padding: 1.8rem; background: rgba(255,255,255,0.03); transition: background 0.2s;
+  }
+
+  .feature-card:hover { background: rgba(255,255,255,0.07); }
+
+  .feature-icon {
+    width: 46px; height: 46px; border-radius: 12px;
+    background: rgba(99,102,241,0.18); display: flex;
+    align-items: center; justify-content: center;
+    font-size: 1.3rem; margin-bottom: 1.1rem;
+  }
+
+  .feature-title { font-size: 1rem; font-weight: 700; color: white; margin-bottom: 0.5rem; }
+  .feature-desc  { font-size: 0.85rem; color: rgba(255,255,255,0.5); line-height: 1.7; }
+
+  /* ── HOW IT WORKS ── */
+  .steps { display: grid; grid-template-columns: repeat(4,1fr); gap: 1.5rem; position: relative; margin-top: 3rem; }
+
+  .steps::before {
+    content: ''; position: absolute; top: 27px; left: 11%; right: 11%;
+    height: 2px; background: linear-gradient(90deg, var(--indigo), #818cf8);
+  }
+
+  .step { text-align: center; }
+  .step-num {
+    width: 54px; height: 54px; background: var(--indigo); color: white;
+    font-weight: 900; font-size: 1.1rem; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.1rem; position: relative; z-index: 1;
+    box-shadow: 0 4px 16px rgba(99,102,241,0.4);
+  }
+
+  .step-title { font-weight: 700; font-size: 0.92rem; margin-bottom: 0.35rem; }
+  .step-desc  { font-size: 0.8rem; color: var(--muted); line-height: 1.6; }
+
+  /* ── PRICING ── */
+  .pricing-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.2rem; max-width: 860px; margin: 3rem auto 0; }
+
+  .price-card {
+    background: white; border: 2px solid var(--border); border-radius: 18px;
+    padding: 2rem; position: relative; transition: all 0.25s;
+  }
+
+  .price-card:hover { transform: translateY(-5px); box-shadow: 0 16px 40px rgba(0,0,0,0.09); }
+
+  .price-card.popular { border-color: var(--indigo); background: var(--ink); color: white; }
+
+  .popular-tag {
+    position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+    background: var(--indigo); color: white; font-size: 0.68rem; font-weight: 700;
+    letter-spacing: 0.07em; text-transform: uppercase; padding: 0.28rem 0.9rem; border-radius: 100px;
+    white-space: nowrap;
+  }
+
+  .plan-name  { font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem; }
+  .plan-sub   { font-size: 0.75rem; color: var(--muted); margin-bottom: 1.2rem; }
+  .popular .plan-sub { color: rgba(255,255,255,0.5); }
+
+  .plan-price { font-size: 2.8rem; font-weight: 900; line-height: 1; letter-spacing: -0.03em; margin-bottom: 0.2rem; }
+  .plan-price .cur { font-size: 1.3rem; vertical-align: top; margin-top: 0.5rem; display: inline-block; }
+  .plan-price .per { font-size: 0.82rem; font-weight: 400; opacity: 0.55; }
+
+  .plan-features { list-style: none; margin: 1.3rem 0 1.8rem; }
+  .plan-features li { font-size: 0.83rem; padding: 0.38rem 0; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; align-items: center; gap: 0.45rem; }
+  .price-card.popular .plan-features li { border-color: rgba(255,255,255,0.07); }
+  .plan-features li::before { content: '✓'; color: var(--indigo); font-weight: 700; }
+  .price-card.popular .plan-features li::before { color: #818cf8; }
+
+  .btn-plan {
+    width: 100%; padding: 0.8rem; border-radius: 9px;
+    font-size: 0.9rem; font-weight: 700; cursor: pointer;
+    border: 2px solid var(--indigo); background: transparent; color: var(--indigo); transition: all 0.2s;
+  }
+  .btn-plan:hover { background: var(--indigo); color: white; }
+  .price-card.popular .btn-plan { background: var(--indigo); color: white; }
+  .price-card.popular .btn-plan:hover { background: var(--indigo-d); }
+
+  /* ── CTA ── */
+  .cta-section {
+    background: var(--indigo); padding: 6rem 5rem; text-align: center; position: relative; overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: 'Mentrix'; font-size: 18vw; font-weight: 900; font-style: italic;
+    color: rgba(255,255,255,0.05); position: absolute; left: 50%; top: 50%;
+    transform: translate(-50%,-50%); white-space: nowrap; pointer-events: none; letter-spacing: -0.04em;
+  }
+
+  .cta-section .section-title { color: white; position: relative; }
+  .cta-section .section-sub   { color: rgba(255,255,255,0.75); margin: 0 auto 2.2rem; position: relative; }
+
+  .btn-white {
+    background: white; color: var(--indigo); padding: 1rem 2.2rem; border-radius: 8px;
+    font-size: 1rem; font-weight: 800; border: none; cursor: pointer;
+    text-decoration: none; transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+  }
+  .btn-white:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--ink); color: rgba(255,255,255,0.45);
+    padding: 3rem 5rem;
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 2.5rem;
+  }
+
+  footer .f-logo { display: flex; align-items: baseline; gap: 0; margin-bottom: 0.7rem; text-decoration: none; }
+  footer .f-logo .m    { font-size: 1.4rem; font-weight: 900; color: var(--indigo); font-style: italic; }
+  footer .f-logo .rest { font-size: 1.2rem; font-weight: 700; color: #e2e8f0; }
+
+  footer p  { font-size: 0.82rem; line-height: 1.7; }
+  footer h4 { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.7); margin-bottom: 0.9rem; }
+  footer ul { list-style: none; }
+  footer ul li { margin-bottom: 0.45rem; }
+  footer ul a  { color: rgba(255,255,255,0.4); text-decoration: none; font-size: 0.83rem; transition: color 0.2s; }
+  footer ul a:hover { color: #818cf8; }
+
+  .footer-bottom {
+    background: #060d1a; padding: 1.1rem 5rem;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.75rem; color: rgba(255,255,255,0.2);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 960px) {
+    nav { padding: 1rem 1.5rem; }
+    nav ul { display: none; }
+    .hero { grid-template-columns: 1fr; padding: 6rem 1.5rem 3rem; }
+    .hero-visual { margin-top: 2.5rem; }
+    .stats-bar { grid-template-columns: 1fr 1fr; padding: 2rem 1.5rem; }
+    .section { padding: 4rem 1.5rem; }
+    .subjects-grid { grid-template-columns: repeat(2,1fr); }
+    .features-grid { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: 1fr 1fr; }
+    .steps::before { display: none; }
+    .pricing-grid { grid-template-columns: 1fr; max-width: 360px; }
+    .cta-section { padding: 4rem 1.5rem; }
+    footer { grid-template-columns: 1fr 1fr; padding: 2rem 1.5rem; }
+    .footer-bottom { flex-direction: column; gap: 0.4rem; padding: 1rem 1.5rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo"><span class="m">M</span><span class="rest">entrix</span></a>
+  <ul>
+    <li><a href="#subjects">Subjects</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#" class="nav-cta">Get Started →</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">WBCHSE Class XI &amp; XII · New Semester MCQ Format</div>
+    <h1 class="hero-title">
+      Master MCQs.<br>
+      <span class="accent">Ace your WBCHSE</span><br>
+      Semester Exams.
+    </h1>
+    <p class="hero-sub">
+      West Bengal's first dedicated MCQ practice platform for the new WBCHSE semester format. Questions in Bengali, built for Class XI &amp; XII students across all streams.
+    </p>
+    <div class="hero-actions">
+      <a href="#" class="btn-primary">Start for Free →</a>
+      <a href="#subjects" class="btn-outline">Browse Subjects</a>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="phone-header">
+          <div class="app-logo"><span class="m">M</span><span class="rest">entrix</span></div>
+          <div class="sub">Biology · Class XII · Sem 1 · MCQ</div>
+        </div>
+        <div class="phone-body">
+          <div class="q-card">
+            <div class="q-num">Question 3 of 20</div>
+            <div class="q-text">মানবদেহে লোহিত রক্ত কণিকার গড় আয়ুষ্কাল কত দিন?</div>
+            <div class="options">
+              <div class="option wrong"><div class="opt-dot"></div>৬০ দিন</div>
+              <div class="option correct"><div class="opt-dot"></div>১২০ দিন</div>
+              <div class="option"><div class="opt-dot"></div>১৮০ দিন</div>
+              <div class="option"><div class="opt-dot"></div>৯০ দিন</div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-stats">
+          <div class="stat-item"><div class="stat-val">72%</div><div class="stat-lbl">Score</div></div>
+          <div class="stat-item"><div class="stat-val">14</div><div class="stat-lbl">Correct</div></div>
+          <div class="stat-item"><div class="stat-val">🔥 5</div><div class="stat-lbl">Streak</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="float-card tr">📚 1,200+ MCQs Live</div>
+    <div class="float-card bl">🎯 Exam-Pattern Ready</div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="s"><span class="n">1200+</span><div class="l">MCQ Questions</div></div>
+  <div class="s"><span class="n">9</span><div class="l">Subjects Covered</div></div>
+  <div class="s"><span class="n">5000+</span><div class="l">Students Enrolled</div></div>
+  <div class="s"><span class="n">94%</span><div class="l">Pass Rate Improvement</div></div>
+</div>
+
+<!-- SUBJECTS -->
+<section class="section" id="subjects">
+  <div class="section-eyebrow">Subjects</div>
+  <h2 class="section-title">All Streams. Both Semesters.</h2>
+  <p class="section-sub">Covering Science, Arts &amp; Commerce — complete WBCHSE Class XI &amp; XII syllabus mapped to the new MCQ semester format.</p>
+  <div class="subjects-grid">
+    <div class="subject-card" style="--sc:#2980b9"><div class="subject-icon">⚡</div><div class="subject-name">Physics</div><div class="subject-stream">Science</div><div class="subject-count">220 MCQs · Sem 1 &amp; 2</div></div>
+    <div class="subject-card" style="--sc:#8e44ad"><div class="subject-icon">⚗️</div><div class="subject-name">Chemistry</div><div class="subject-stream">Science</div><div class="subject-count">240 MCQs · Sem 1 &amp; 2</div></div>
+    <div class="subject-card" style="--sc:#27ae60"><div class="subject-icon">🌿</div><div class="subject-name">Biology</div><div class="subject-stream">Science</div><div class="subject-count">210 MCQs · Sem 1 &amp; 2</div></div>
+    <div class="subject-card" style="--sc:#e67e22"><div class="subject-icon">🔢</div><div class="subject-name">Mathematics</div><div class="subject-stream">Science</div><div class="subject-count">280 MCQs · Sem 1 &amp; 2</div></div>
+    <div class="subject-card" style="--sc:#c0392b"><div class="subject-icon">📜</div><div class="subject-name">History</div><div class="subject-stream">Arts</div><div class="subject-count">190 MCQs · Sem 1 &amp; 2</div></div>
+    <div class="subject-card" style="--sc:#16a085"><div class="subject-icon">🌍</div><div class="subject-name">Geography</div><div class="subject-stream">Arts</div><div class="subject-count">175 MCQs · Sem 1 &amp; 2</div></div>
+    <div class="subject-card" style="--sc:#d35400"><div class="subject-icon">📊</div><div class="subject-name">Accountancy</div><div class="subject-stream">Commerce</div><div class="subject-count">160 MCQs · Sem 1 &amp; 2</div></div>
+    <div class="subject-card" style="--sc:#2c3e50"><div class="subject-icon">📖</div><div class="subject-name">Bengali</div><div class="subject-stream">General</div><div class="subject-count">140 MCQs · Sem 1 &amp; 2</div></div>
+    <div class="subject-card" style="--sc:#7f8c8d"><div class="subject-icon">🔤</div><div class="subject-name">English</div><div class="subject-stream">General</div><div class="subject-count">130 MCQs · Sem 1 &amp; 2</div></div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section dark" id="features">
+  <div class="section-eyebrow">Features</div>
+  <h2 class="section-title">Built for Bengal's new exam pattern.</h2>
+  <p class="section-sub">Every feature designed around how WBCHSE students actually study and how the new MCQ semester system works.</p>
+  <div class="features-grid">
+    <div class="feature-card"><div class="feature-icon">🎯</div><div class="feature-title">WBCHSE MCQ Pattern</div><p class="feature-desc">Questions mapped exactly to the new semester format — Semester 1 and 2 for both Class XI and XII, just like the real exam.</p></div>
+    <div class="feature-card"><div class="feature-icon">📖</div><div class="feature-title">Questions in Bengali</div><p class="feature-desc">All MCQ questions and answer options are written in Bengali script so students can practise in their native language without barriers.</p></div>
+    <div class="feature-card"><div class="feature-icon">📊</div><div class="feature-title">Smart Performance Analytics</div><p class="feature-desc">Track your score chapter by chapter. Mentrix shows exactly where you are weak and suggests what to revise next.</p></div>
+    <div class="feature-card"><div class="feature-icon">⏱️</div><div class="feature-title">Timed Mock Tests</div><p class="feature-desc">Full-length timed mock tests that replicate the real WBCHSE exam environment so there are zero surprises on exam day.</p></div>
+    <div class="feature-card"><div class="feature-icon">🔥</div><div class="feature-title">Daily Streaks &amp; Leaderboards</div><p class="feature-desc">Gamified daily practice with streaks, XP points and class leaderboards to keep motivation high all semester.</p></div>
+    <div class="feature-card"><div class="feature-icon">📱</div><div class="feature-title">Mobile &amp; Web</div><p class="feature-desc">Study on your phone, tablet or laptop. Progress syncs automatically across all your devices in real time.</p></div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section alt" id="how">
+  <div class="section-eyebrow">How It Works</div>
+  <h2 class="section-title">Simple as 1, 2, 3, 4.</h2>
+  <div class="steps">
+    <div class="step"><div class="step-num">1</div><div class="step-title">Sign Up Free</div><p class="step-desc">Create your account in seconds using your phone number. No credit card needed.</p></div>
+    <div class="step"><div class="step-num">2</div><div class="step-title">Choose Your Subject</div><p class="step-desc">Select your stream, subjects, class and semester. Mentrix personalises your content instantly.</p></div>
+    <div class="step"><div class="step-num">3</div><div class="step-title">Practise MCQs</div><p class="step-desc">Topic-by-topic practice or full mock tests. Every answer comes with a Bengali explanation.</p></div>
+    <div class="step"><div class="step-num">4</div><div class="step-title">Improve &amp; Repeat</div><p class="step-desc">Use your analytics to target weak areas. Watch your score go up every week.</p></div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section" id="pricing" style="text-align:center">
+  <div class="section-eyebrow">Pricing</div>
+  <h2 class="section-title">Affordable for every student.</h2>
+  <p class="section-sub" style="margin:0 auto 0">Simple plans with no hidden fees.</p>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="plan-name">Free</div>
+      <div class="plan-sub">Forever free</div>
+      <div class="plan-price"><span class="cur">₹</span>0</div>
+      <ul class="plan-features">
+        <li>50 MCQs per subject</li>
+        <li>Basic analytics</li>
+        <li>1 mock test per month</li>
+        <li>All subjects accessible</li>
+      </ul>
+      <button class="btn-plan">Get Started</button>
+    </div>
+    <div class="price-card popular">
+      <div class="popular-tag">⭐ Most Popular</div>
+      <div class="plan-name">Semester Pack</div>
+      <div class="plan-sub">Per semester</div>
+      <div class="plan-price"><span class="cur">₹</span>299 <span class="per">/sem</span></div>
+      <ul class="plan-features">
+        <li>Unlimited MCQs</li>
+        <li>Full analytics dashboard</li>
+        <li>Unlimited mock tests</li>
+        <li>Bengali explanations</li>
+        <li>All subjects unlocked</li>
+      </ul>
+      <button class="btn-plan">Buy Now</button>
+    </div>
+    <div class="price-card">
+      <div class="plan-name">Annual Pack</div>
+      <div class="plan-sub">Best value — full year</div>
+      <div class="plan-price"><span class="cur">₹</span>499 <span class="per">/yr</span></div>
+      <ul class="plan-features">
+        <li>Everything in Semester</li>
+        <li>Class XI + XII combined</li>
+        <li>Offline access</li>
+        <li>Priority support</li>
+        <li>Early feature access</li>
+      </ul>
+      <button class="btn-plan">Best Value</button>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2 class="section-title">Start today. Score higher.</h2>
+  <p class="section-sub">Join thousands of WBCHSE students preparing smarter with Mentrix.</p>
+  <a href="#" class="btn-white">Get Started for Free →</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <a href="#" class="f-logo"><span class="m">M</span><span class="rest">entrix</span></a>
+    <p>West Bengal's dedicated MCQ practice platform for WBCHSE Class XI &amp; XII students. Questions in Bengali, built for the new semester exam format.</p>
+  </div>
+  <div>
+    <h4>Product</h4>
+    <ul>
+      <li><a href="#">MCQ Practice</a></li>
+      <li><a href="#">Mock Tests</a></li>
+      <li><a href="#">Analytics</a></li>
+      <li><a href="#">Leaderboard</a></li>
+    </ul>
+  </div>
+  <div>
+    <h4>Subjects</h4>
+    <ul>
+      <li><a href="#">Science</a></li>
+      <li><a href="#">Arts</a></li>
+      <li><a href="#">Commerce</a></li>
+      <li><a href="#">General</a></li>
+    </ul>
+  </div>
+  <div>
+    <h4>Company</h4>
+    <ul>
+      <li><a href="#">About Us</a></li>
+      <li><a href="#">Blog</a></li>
+      <li><a href="#">Careers</a></li>
+      <li><a href="#">Contact</a></li>
+    </ul>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <span>© 2025 Mentrix. All rights reserved. Made with ❤️ in West Bengal.</span>
+  <span>Privacy Policy · Terms of Use</span>
+</div>
+
+</body>
+</html>
