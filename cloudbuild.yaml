@@ -19,3 +19,6 @@ images:
   - 'gcr.io/cce9b8d9-aa03-4985-a0e/mentrix-apk:latest'
 
 timeout: '3600s'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
