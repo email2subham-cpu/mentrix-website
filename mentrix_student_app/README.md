@@ -1,3 +1,6 @@
+# Mentrix - EdTech Platform
+Ready for production!
+
 # mentrix_student_app
 
 A new Flutter project.
