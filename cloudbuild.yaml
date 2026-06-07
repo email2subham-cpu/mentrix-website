@@ -8,19 +8,14 @@ steps:
       - '-f'
       - 'Dockerfile'
       - '.'
-    id: 'build-apk-docker'
 
-  # Step 2: Push to Cloud Artifact Registry
+  # Step 2: Push to Container Registry
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'push'
       - 'gcr.io/cce9b8d9-aa03-4985-a0e/mentrix-apk:latest'
-    id: 'push-artifact'
 
-artifacts:
-  objects:
-    location: 'gs://cce9b8d9-aa03-4985-a0e-build-artifacts/apk'
-    paths:
-      - 'mentrix_student_app/build/outputs/apk/release/*.apk'
+images:
+  - 'gcr.io/cce9b8d9-aa03-4985-a0e/mentrix-apk:latest'
 
 timeout: '3600s'
