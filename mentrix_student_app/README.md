@@ -1,5 +1,5 @@
 # Mentrix - EdTech Platform
-Ready for production!
+Updated: Build v2 ready!
 
 # mentrix_student_app
 
