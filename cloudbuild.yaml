@@ -1,0 +1,36 @@
+steps:
+  # Step 1: Build Flutter Web
+  - name: 'gcr.io/cloud-builders/gke-deploy'
+    args:
+      - run
+      - --filename=.
+      - --location=us-central1
+      - --cluster=default
+    id: 'build-flutter-web'
+
+  # Step 2: Build Flutter APK
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/mentrix-apk:latest'
+      - '-f'
+      - 'Dockerfile'
+      - '.'
+    id: 'build-apk-docker'
+
+  # Step 3: Push to Cloud Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/mentrix-apk:latest'
+    id: 'push-artifact'
+
+# APK will be built and available in Cloud Storage
+artifacts:
+  objects:
+    location: 'gs://$PROJECT_ID-build-artifacts/apk'
+    paths:
+      - 'mentrix_student_app/build/outputs/apk/release/*.apk'
+
+timeout: '3600s'
