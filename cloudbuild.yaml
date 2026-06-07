@@ -29,7 +29,7 @@ steps:
 # APK will be built and available in Cloud Storage
 artifacts:
   objects:
-    location: 'gs://$PROJECT_ID-build-artifacts/apk'
+    location: 'location: 'gs://cce9b8d9-aa03-4985-a0e-build-artifacts/apk'
     paths:
       - 'mentrix_student_app/build/outputs/apk/release/*.apk'
 
