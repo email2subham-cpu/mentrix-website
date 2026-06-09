@@ -7,15 +7,12 @@ steps:
       - '/workspace:/workspace'
       - '-w'
       - '/workspace/mentrix_student_app'
-      - 'cimg/android:latest'
+      - 'cirrusci/flutter:latest'
       - 'bash'
       - '-c'
       - |
-        curl https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.19.0-stable.tar.xz -o /tmp/flutter.tar.xz
-        tar xf /tmp/flutter.tar.xz -C /opt
-        /opt/flutter/bin/flutter config --no-analytics
-        /opt/flutter/bin/flutter pub get
-        /opt/flutter/bin/flutter build apk --release
+        flutter pub get
+        flutter build apk --release
         mkdir -p /workspace/output
         cp build/app/outputs/apk/release/app-release.apk /workspace/output/app-release.apk
 
