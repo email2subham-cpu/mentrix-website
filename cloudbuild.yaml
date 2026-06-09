@@ -1,24 +1,18 @@
 steps:
-  # Install dependencies
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
+  # Build using Docker with proper dependencies
+  - name: 'gcr.io/cloud-builders/docker'
     args:
+      - 'run'
+      - '--rm'
+      - '-v'
+      - '/workspace:/workspace'
+      - 'cirrusci/flutter:latest'
+      - 'bash'
       - '-c'
       - |
-        apt-get update
-        apt-get install -y unzip git curl
-
-  # Build Flutter APK
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        git clone https://github.com/flutter/flutter.git /flutter
-        /flutter/bin/flutter config --no-analytics
         cd /workspace/mentrix_student_app
-        /flutter/bin/flutter pub get
-        /flutter/bin/flutter build apk --release
+        flutter pub get
+        flutter build apk --release
         mkdir -p /workspace/output
         cp build/app/outputs/apk/release/app-release.apk /workspace/output/app-release.apk
 
