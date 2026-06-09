@@ -1,22 +1,10 @@
 steps:
-  # Step 1: Build Flutter APK
-  - name: 'gcr.io/cloud-builders/docker'
+  # Step 1: Build Flutter APK using gke-deploy (Cloud Build native)
+  - name: 'gcr.io/cloud-builders/gke-deploy'
     args:
-      - 'build'
-      - '-t'
-      - 'gcr.io/cce9b8d9-aa03-4985-a0e/mentrix-apk:latest'
-      - '-f'
-      - 'Dockerfile'
-      - '.'
-
-  # Step 2: Push to Container Registry
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - 'push'
-      - 'gcr.io/cce9b8d9-aa03-4985-a0e/mentrix-apk:latest'
-
-images:
-  - 'gcr.io/cce9b8d9-aa03-4985-a0e/mentrix-apk:latest'
+      - 'run'
+      - '--filename=.'
+      - '--image=ubuntu:22.04'
 
 timeout: '3600s'
 
