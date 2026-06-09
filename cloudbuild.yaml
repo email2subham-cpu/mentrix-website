@@ -1,10 +1,25 @@
 steps:
-  # Step 1: Build Flutter APK using gke-deploy (Cloud Build native)
-  - name: 'gcr.io/cloud-builders/gke-deploy'
+  # Clone Flutter repo
+  - name: 'gcr.io/cloud-builders/git'
+    args: ['clone', 'https://github.com/flutter/flutter.git', '/workspace/flutter']
+
+  # Set Flutter PATH
+  - name: 'gcr.io/cloud-builders/gcloud'
+    env:
+      - 'PATH=/workspace/flutter/bin:$PATH'
+    args: ['--version']
+
+  # Build APK
+  - name: 'gcr.io/cloud-builders/gcloud'
+    env:
+      - 'PATH=/workspace/flutter/bin:$PATH'
     args:
-      - 'run'
-      - '--filename=.'
-      - '--image=ubuntu:22.04'
+      - 'bash'
+      - '-c'
+      - |
+        cd /workspace/mentrix_student_app
+        flutter pub get
+        flutter build apk --release
 
 timeout: '3600s'
 
