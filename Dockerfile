@@ -1,36 +1,31 @@
-# Use official Flutter image
-FROM google/cloud-builders/docker AS builder
+# Use Ubuntu with Flutter pre-installed
+FROM ubuntu:22.04
 
-# Install Flutter dependencies
+# Install dependencies
 RUN apt-get update && apt-get install -y \
     git \
     curl \
     unzip \
+    openjdk-11-jdk \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Flutter
-RUN git clone https://github.com/flutter/flutter.git /flutter && \
-    cd /flutter && \
-    git checkout stable && \
-    /flutter/bin/flutter config --no-analytics && \
-    /flutter/bin/flutter precache
-
+# Install Flutter SDK
+RUN git clone https://github.com/flutter/flutter.git /flutter
 ENV PATH="/flutter/bin:${PATH}"
+RUN flutter config --no-analytics
+RUN flutter precache
 
-# Set working directory
 WORKDIR /app
 
-# Copy Flutter project
+# Copy project
 COPY mentrix_student_app/ .
 
-# Get dependencies
-RUN flutter pub get
-
 # Build APK
+RUN flutter pub get
 RUN flutter build apk --release
 
-# Final stage - extract APK
-FROM google/cloud-builders/docker
-COPY --from=builder /app/build/app/outputs/apk/release/app-release.apk /workspace/app-release.apk
+# Copy to output
+RUN mkdir -p /output
+RUN cp build/app/outputs/apk/release/app-release.apk /output/app-release.apk
 
-ENTRYPOINT ["cp", "/workspace/app-release.apk", "/workspace/output/"]
+ENTRYPOINT ["/bin/bash"]
