@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'screens/question_screen.dart';
 
 void main() {
   runApp(const MentrixApp());
@@ -207,6 +206,7 @@ class ExamCard extends StatelessWidget {
   }
 }
 
+// SUBJECT LIST PAGE
 class SubjectListPage extends StatelessWidget {
   final String examType;
 
@@ -246,8 +246,14 @@ class SubjectListPage extends StatelessWidget {
               name: subject['name'] as String,
               icon: subject['icon'] as String,
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Loading ${subject['name']} chapters...')),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChapterListPage(
+                      examType: examType,
+                      subjectName: subject['name'] as String,
+                    ),
+                  ),
                 );
               },
             );
@@ -299,4 +305,315 @@ class SubjectCard extends StatelessWidget {
     );
   }
 }
-      
+
+// CHAPTER LIST PAGE
+class ChapterListPage extends StatelessWidget {
+  final String examType;
+  final String subjectName;
+
+  const ChapterListPage({
+    Key? key,
+    required this.examType,
+    required this.subjectName,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // Mock chapters data
+    final chapters = [
+      {'id': 1, 'name': 'Chapter 1: Introduction'},
+      {'id': 2, 'name': 'Chapter 2: Basics'},
+      {'id': 3, 'name': 'Chapter 3: Advanced Concepts'},
+      {'id': 4, 'name': 'Chapter 4: Applications'},
+      {'id': 5, 'name': 'Chapter 5: Practice Problems'},
+    ];
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(subjectName),
+        backgroundColor: const Color(0xFF5B4EE8),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(15),
+        child: ListView.builder(
+          itemCount: chapters.length,
+          itemBuilder: (context, index) {
+            final chapter = chapters[index];
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: ChapterCard(
+                name: chapter['name'] as String,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TopicListPage(
+                        examType: examType,
+                        subjectName: subjectName,
+                        chapterName: chapter['name'] as String,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class ChapterCard extends StatelessWidget {
+  final String name;
+  final VoidCallback onTap;
+
+  const ChapterCard({
+    Key? key,
+    required this.name,
+    required this.onTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.orange[50],
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Colors.orange, width: 2),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              name,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const Icon(Icons.arrow_forward, color: Colors.orange),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// TOPIC LIST PAGE
+class TopicListPage extends StatelessWidget {
+  final String examType;
+  final String subjectName;
+  final String chapterName;
+
+  const TopicListPage({
+    Key? key,
+    required this.examType,
+    required this.subjectName,
+    required this.chapterName,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // Mock topics data
+    final topics = [
+      {'id': 1, 'name': 'Topic 1.1: Basic Concepts'},
+      {'id': 2, 'name': 'Topic 1.2: Key Definitions'},
+      {'id': 3, 'name': 'Topic 1.3: Formulas & Theorems'},
+      {'id': 4, 'name': 'Topic 1.4: Problem Solving'},
+    ];
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(chapterName),
+        backgroundColor: const Color(0xFF5B4EE8),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(15),
+        child: ListView.builder(
+          itemCount: topics.length,
+          itemBuilder: (context, index) {
+            final topic = topics[index];
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: TopicCard(
+                name: topic['name'] as String,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SubtopicListPage(
+                        examType: examType,
+                        subjectName: subjectName,
+                        chapterName: chapterName,
+                        topicName: topic['name'] as String,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class TopicCard extends StatelessWidget {
+  final String name;
+  final VoidCallback onTap;
+
+  const TopicCard({
+    Key? key,
+    required this.name,
+    required this.onTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.green[50],
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Colors.green, width: 2),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              name,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const Icon(Icons.arrow_forward, color: Colors.green),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// SUBTOPIC LIST PAGE
+class SubtopicListPage extends StatelessWidget {
+  final String examType;
+  final String subjectName;
+  final String chapterName;
+  final String topicName;
+
+  const SubtopicListPage({
+    Key? key,
+    required this.examType,
+    required this.subjectName,
+    required this.chapterName,
+    required this.topicName,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // Mock subtopics data
+    final subtopics = [
+      {'id': 1, 'name': 'Subtopic 1.1.1', 'questions': 12},
+      {'id': 2, 'name': 'Subtopic 1.1.2', 'questions': 15},
+      {'id': 3, 'name': 'Subtopic 1.1.3', 'questions': 18},
+      {'id': 4, 'name': 'Subtopic 1.1.4', 'questions': 20},
+    ];
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(topicName),
+        backgroundColor: const Color(0xFF5B4EE8),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(15),
+        child: ListView.builder(
+          itemCount: subtopics.length,
+          itemBuilder: (context, index) {
+            final subtopic = subtopics[index];
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: SubtopicCard(
+                name: subtopic['name'] as String,
+                questions: subtopic['questions'] as int,
+                onTap: () {
+                  // Navigate to QuestionScreen
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => QuestionScreen(
+                        examType: examType,
+                        isTestSeries: false,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class SubtopicCard extends StatelessWidget {
+  final String name;
+  final int questions;
+  final VoidCallback onTap;
+
+  const SubtopicCard({
+    Key? key,
+    required this.name,
+    required this.questions,
+    required this.onTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.purple[50],
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Colors.purple, width: 2),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '$questions Questions',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+            const Icon(Icons.arrow_forward, color: Colors.purple),
+          ],
+        ),
+      ),
+    );
+  }
+}
