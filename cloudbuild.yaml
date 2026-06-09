@@ -1,5 +1,5 @@
 steps:
-  # Build Flutter APK
+  # Build Flutter APK using image with Android SDK pre-installed
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'run'
@@ -8,20 +8,12 @@ steps:
       - '/workspace:/workspace'
       - '-w'
       - '/workspace/mentrix_student_app'
-      - 'ubuntu:22.04'
+      - 'ghcr.io/actions/android:latest'
       - 'bash'
       - '-c'
       - |
-        apt-get update && apt-get install -y curl git unzip openjdk-11-jdk xz-utils wget
-        git config --global --add safe.directory /opt/flutter
         curl https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.19.0-stable.tar.xz -o /tmp/flutter.tar.xz
         tar xf /tmp/flutter.tar.xz -C /opt
-        
-        mkdir -p /opt/android-sdk
-        export ANDROID_HOME=/opt/android-sdk
-        wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O /tmp/cmdline-tools.zip
-        unzip /tmp/cmdline-tools.zip -d /opt/android-sdk
-        
         /opt/flutter/bin/flutter config --no-analytics
         /opt/flutter/bin/flutter pub get
         /opt/flutter/bin/flutter build apk --release
