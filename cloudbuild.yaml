@@ -7,7 +7,7 @@ steps:
       - '/workspace:/workspace'
       - '-w'
       - '/workspace/mentrix_student_app'
-      - 'cirrusci/flutter:latest'
+      - 'cirrusci/flutter:3.19.0'
       - 'bash'
       - '-c'
       - |
