@@ -1,5 +1,5 @@
 steps:
-  # Build Flutter APK using official Flutter Docker
+  # Build Flutter APK
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'run'
@@ -8,17 +8,16 @@ steps:
       - '/workspace:/workspace'
       - '-w'
       - '/workspace/mentrix_student_app'
-      - 'google/cloud-builders/gke-deploy'
-      - 'sh'
+      - 'ubuntu:22.04'
+      - 'bash'
       - '-c'
       - |
-        apt-get update
-        apt-get install -y curl git unzip
-        curl https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.19.0-stable.tar.xz -o flutter.tar.xz
-        tar xf flutter.tar.xz
-        export PATH="$PATH:/workspace/flutter/bin"
-        flutter pub get
-        flutter build apk --release
+        apt-get update && apt-get install -y curl git unzip openjdk-11-jdk
+        curl https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.19.0-stable.tar.xz -o /tmp/flutter.tar.xz
+        tar xf /tmp/flutter.tar.xz -C /opt
+        /opt/flutter/bin/flutter config --no-analytics
+        /opt/flutter/bin/flutter pub get
+        /opt/flutter/bin/flutter build apk --release
         mkdir -p /workspace/output
         cp build/app/outputs/apk/release/app-release.apk /workspace/output/app-release.apk
 
