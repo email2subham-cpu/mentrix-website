@@ -6,7 +6,7 @@ steps:
       - '--rm'
       - '-v'
       - '/workspace:/workspace'
-      - 'cirrusci/flutter:latest'
+      - 'ghcr.io/cirruslabs/flutter:latest'
       - 'bash'
       - '-c'
       - |
