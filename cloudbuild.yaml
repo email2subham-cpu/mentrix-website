@@ -1,5 +1,4 @@
 steps:
-  # Build Flutter APK using image with Android SDK pre-installed
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'run'
@@ -8,7 +7,7 @@ steps:
       - '/workspace:/workspace'
       - '-w'
       - '/workspace/mentrix_student_app'
-      - 'ghcr.io/actions/android:latest'
+      - 'cimg/android:latest'
       - 'bash'
       - '-c'
       - |
