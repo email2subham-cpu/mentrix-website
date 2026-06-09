@@ -1,16 +1,22 @@
 steps:
-  # Build using Docker with proper dependencies
+  # Build Flutter APK using official Flutter Docker
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - 'run'
       - '--rm'
       - '-v'
       - '/workspace:/workspace'
-      - 'ghcr.io/cirruslabs/flutter:latest'
-      - 'bash'
+      - '-w'
+      - '/workspace/mentrix_student_app'
+      - 'google/cloud-builders/gke-deploy'
+      - 'sh'
       - '-c'
       - |
-        cd /workspace/mentrix_student_app
+        apt-get update
+        apt-get install -y curl git unzip
+        curl https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.19.0-stable.tar.xz -o flutter.tar.xz
+        tar xf flutter.tar.xz
+        export PATH="$PATH:/workspace/flutter/bin"
         flutter pub get
         flutter build apk --release
         mkdir -p /workspace/output
@@ -20,3 +26,4 @@ timeout: '3600s'
 
 options:
   logging: CLOUD_LOGGING_ONLY
+
