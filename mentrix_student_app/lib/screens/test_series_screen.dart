@@ -129,34 +129,6 @@ class _TestSeriesScreenState extends State<TestSeriesScreen> {
   );
 }
 
-  void showPremiumDialog(String testName) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Premium Test'),
-        content: Text(
-          'This test "$testName" is available for Premium users only.\n\nUpgrade now to access unlimited tests!',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // Navigate to premium page
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF5B4EE8),
-            ),
-            child: const Text('Upgrade to Premium'),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
