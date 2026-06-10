@@ -156,23 +156,32 @@ class _QuestionScreenState extends State<QuestionScreen> {
   }
 
   void showTestCompletionDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Test Completed!'),
-        content: const Text('You have completed all questions.'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
-            },
-            child: const Text('Back'),
-          ),
-        ],
+  // Calculate correct, wrong, skipped answers
+  int correctAnswers = 0;
+  int wrongAnswers = 0;
+  int skippedAnswers = 0;
+  
+  // This is a mock calculation - you'll calculate from actual answers
+  correctAnswers = 42;
+  wrongAnswers = 5;
+  skippedAnswers = 3;
+
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => ResultsScreen(
+        examType: widget.examType,
+        totalQuestions: questions.length,
+        correctAnswers: correctAnswers,
+        wrongAnswers: wrongAnswers,
+        skippedQuestions: skippedAnswers,
+        totalTimeSpent: DateTime.now().difference(answerStartTime!).inSeconds,
+        isTestSeries: widget.isTestSeries,
+        testName: 'Mock Test 1',
       ),
-    );
-  }
+    ),
+  );
+}
 
   String formatTime(int seconds) {
     int minutes = seconds ~/ 60;
