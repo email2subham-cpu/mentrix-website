@@ -133,6 +133,21 @@ class HomePage extends StatelessWidget {
             ),
 
             // Banner Section
+            // In HomePage, add this button in the banner section or create a tab
+ElevatedButton(
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LeaderboardScreen(
+          examType: 'WBCHSE',
+          subjectName: 'All Subjects',
+        ),
+      ),
+    );
+  },
+  child: const Text('View Leaderboard'),
+),
             Padding(
               padding: const EdgeInsets.all(20),
               child: Container(
