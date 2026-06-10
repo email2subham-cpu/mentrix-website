@@ -581,25 +581,33 @@ class SubtopicListPage extends StatelessWidget {
                 name: subtopic['name'] as String,
                 questions: subtopic['questions'] as int,
                 onTap: () {
-                  // Navigate to QuestionScreen
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => QuestionScreen(
-                        examType: examType,
-                        isTestSeries: false,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            );
-          },
+  // Check if subtopic is premium
+  bool isPremium = index >= 3; // Last 2 are premium (mock)
+  bool userIsPremium = false; // Change to true if user is premium
+  
+  if (isPremium && !userIsPremium) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PremiumLockScreen(
+          lockReason: 'subtopic_limit',
+          examType: examType,
+        ),
+      ),
+    );
+  } else {
+    // Open subtopic normally
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => QuestionScreen(
+          examType: examType,
+          isTestSeries: false,
         ),
       ),
     );
   }
-}
+},
 
 class SubtopicCard extends StatelessWidget {
   final String name;
