@@ -3,6 +3,7 @@ import 'screens/question_screen.dart';
 import 'screens/test_series_screen.dart';
 import 'screens/results_screen.dart';
 import 'screens/premium_lock_screen.dart';
+import 'screens/leaderboard_screen.dart';
 
 void main() {
   runApp(const MentrixApp());
