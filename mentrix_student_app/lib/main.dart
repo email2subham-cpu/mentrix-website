@@ -215,6 +215,46 @@ class SubjectListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(examType),
+          backgroundColor: const Color(0xFF5B4EE8),
+          elevation: 0,
+          bottom: const TabBar(
+            tabs: [
+              Tab(text: 'Practice'),
+              Tab(text: 'Test Series'),
+            ],
+            indicatorColor: Colors.white,
+            indicatorWeight: 3,
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            // TAB 1: PRACTICE QUESTIONS
+            PracticeTab(examType: examType),
+            
+            // TAB 2: TEST SERIES
+            TestSeriesScreen(
+              examType: examType,
+              subjectName: examType,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class PracticeTab extends StatelessWidget {
+  final String examType;
+
+  const PracticeTab({Key? key, required this.examType}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     final subjects = [
       {'name': 'Physics', 'icon': '⚡'},
       {'name': 'Chemistry', 'icon': '⚗️'},
@@ -226,40 +266,34 @@ class SubjectListPage extends StatelessWidget {
       {'name': 'English', 'icon': '🔤'},
     ];
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(examType),
-        backgroundColor: const Color(0xFF5B4EE8),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(15),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 15,
-            mainAxisSpacing: 15,
-            childAspectRatio: 1.2,
-          ),
-          itemCount: subjects.length,
-          itemBuilder: (context, index) {
-            final subject = subjects[index];
-            return SubjectCard(
-              name: subject['name'] as String,
-              icon: subject['icon'] as String,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ChapterListPage(
-                      examType: examType,
-                      subjectName: subject['name'] as String,
-                    ),
-                  ),
-                );
-              },
-            );
-          },
+    return Padding(
+      padding: const EdgeInsets.all(15),
+      child: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 15,
+          mainAxisSpacing: 15,
+          childAspectRatio: 1.2,
         ),
+        itemCount: subjects.length,
+        itemBuilder: (context, index) {
+          final subject = subjects[index];
+          return SubjectCard(
+            name: subject['name'] as String,
+            icon: subject['icon'] as String,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChapterListPage(
+                    examType: examType,
+                    subjectName: subject['name'] as String,
+                  ),
+                ),
+              );
+            },
+          );
+        },
       ),
     );
   }
