@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/question_screen.dart';
+import 'screens/test_series_screen.dart';
 
 void main() {
   runApp(const MentrixApp());
