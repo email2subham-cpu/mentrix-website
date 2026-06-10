@@ -101,23 +101,33 @@ class _TestSeriesScreenState extends State<TestSeriesScreen> {
   }
 
   void startTest(Map<String, dynamic> test) {
-    // Check if premium test and user is not premium
-    if (test['isPremium']) {
-      showPremiumDialog(test['name']);
-      return;
-    }
-
-    // Start the test
+  // Check if premium test and user is not premium
+  bool userIsPremium = false; // Change to true if user has premium
+  
+  if (test['isPremium'] && !userIsPremium) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => QuestionScreen(
+        builder: (context) => PremiumLockScreen(
+          lockReason: 'test_series',
           examType: widget.examType,
-          isTestSeries: true,
         ),
       ),
     );
+    return;
   }
+
+  // Start the test
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => QuestionScreen(
+        examType: widget.examType,
+        isTestSeries: true,
+      ),
+    ),
+  );
+}
 
   void showPremiumDialog(String testName) {
     showDialog(
