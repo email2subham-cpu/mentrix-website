@@ -132,55 +132,68 @@ class HomePage extends StatelessWidget {
               ),
             ),
 
-            // Banner Section
-            // In HomePage, add this button in the banner section or create a tab
-ElevatedButton(
-  onPressed: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => LeaderboardScreen(
-          examType: 'WBCHSE',
-          subjectName: 'All Subjects',
+            // Banner Section + Leaderboard Button
+Padding(
+  padding: const EdgeInsets.all(20),
+  child: Column(
+    children: [
+      // Existing banner
+      Container(
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: Colors.green[50],
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Colors.green, width: 2),
         ),
-      ),
-    );
-  },
-  child: const Text('View Leaderboard'),
-),
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Container(
-                padding: const EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  color: Colors.green[50],
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.green, width: 2),
-                ),
-                child: const Row(
-                  children: [
-                    Icon(Icons.star, color: Colors.green),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        'New Feature: Answer Keys for WBCHSE are LIVE!',
-                        style: TextStyle(
-                          color: Colors.green,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
+        child: const Row(
+          children: [
+            Icon(Icons.star, color: Colors.green),
+            SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'New Feature: Answer Keys for WBCHSE are LIVE!',
+                style: TextStyle(
+                  color: Colors.green,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-}
-
+      
+      const SizedBox(height: 16),
+      
+      // Leaderboard button
+      SizedBox(
+        width: double.infinity,
+        child: ElevatedButton.icon(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const LeaderboardScreen(
+                  examType: 'WBCHSE',
+                  subjectName: 'All Subjects',
+                ),
+              ),
+            );
+          },
+          icon: const Text('🏆', style: TextStyle(fontSize: 18)),
+          label: const Text('View Leaderboard'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.orange,
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+),
+k
 class ExamCard extends StatelessWidget {
   final String name;
   final String icon;
