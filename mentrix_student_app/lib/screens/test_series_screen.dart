@@ -470,7 +470,7 @@ class TestCard extends StatelessWidget {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: test['isPremium']
+                  backgroundColor: test['isPremium'] = true
                       ? Colors.amber
                       : const Color(0xFF5B4EE8),
                   padding: const EdgeInsets.symmetric(vertical: 14),
