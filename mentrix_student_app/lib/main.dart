@@ -629,11 +629,13 @@ class SubtopicListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Mock subtopics data with premium flag
     final subtopics = [
-      {'id': 1, 'name': 'Subtopic 1.1.1', 'questions': 12, 'isPremium': false},
-      {'id': 2, 'name': 'Subtopic 1.1.2', 'questions': 15, 'isPremium': false},
-      {'id': 3, 'name': 'Subtopic 1.1.3', 'questions': 18, 'isPremium': true},
-      {'id': 4, 'name': 'Subtopic 1.1.4', 'questions': 20, 'isPremium': true},
-    ];
+  {'id': 1, 'name': 'Subtopic 1.1.1', 'questions': 12, 'isPremium': false},
+  {'id': 2, 'name': 'Subtopic 1.1.2', 'questions': 15, 'isPremium': false},
+  {'id': 3, 'name': 'Subtopic 1.1.3', 'questions': 18, 'isPremium': true},
+  {'id': 4, 'name': 'Subtopic 1.1.4', 'questions': 20, 'isPremium': true},
+];
+
+// Just hardcode isPremium flags directly (no need for logic)
 
     // Mock: User is NOT premium (change to true to test premium user)
     bool userIsPremium = false;
