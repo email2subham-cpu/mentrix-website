@@ -709,7 +709,7 @@ class PricingPlanCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.bold,
-                        color: Colors.green[700],
+                        color: Colors.green[700]!,
                       ),
                     ),
                   ),
