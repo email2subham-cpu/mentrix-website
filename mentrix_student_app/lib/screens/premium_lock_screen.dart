@@ -265,7 +265,7 @@ class _PremiumLockScreenState extends State<PremiumLockScreen> {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
-                        color: Colors.green[900],
+                        color: Colors.green[900]!,
                       ),
                     ),
                     const SizedBox(height: 12),
