@@ -380,7 +380,7 @@ class TestCard extends StatelessWidget {
                             value: test['bestScorePercentage'] / 100,
                             backgroundColor: Colors.green[200],
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.green[600],
+                              Colors.green[600]!,
                             ),
                             minHeight: 6,
                           ),
