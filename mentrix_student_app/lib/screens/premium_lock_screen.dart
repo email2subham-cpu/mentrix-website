@@ -260,7 +260,7 @@ class _PremiumLockScreenState extends State<PremiumLockScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                   Text(
                       'Premium Benefits:',
                       style: TextStyle(
                         fontSize: 14,
