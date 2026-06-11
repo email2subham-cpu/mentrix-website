@@ -72,16 +72,22 @@ class HomePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF5B4EE8),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 40,
-                        vertical: 15,
-                      ),
-                    ),
-                    onPressed: () {},
-                    child: const Text('Get Started'),
-                  ),
+  style: ElevatedButton.styleFrom(
+    backgroundColor: const Color(0xFF5B4EE8),
+    padding: const EdgeInsets.symmetric(
+      horizontal: 40,
+      vertical: 15,
+    ),
+  ),
+  onPressed: () {
+    // Scroll to exam selection or navigate
+    // For now, just show a snackbar
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Select an exam below to get started!')),
+    );
+  },
+  child: const Text('Get Started'),
+),
                   const SizedBox(height: 20),
                 ],
               ),
