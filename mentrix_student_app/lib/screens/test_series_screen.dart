@@ -1,5 +1,6 @@
  import 'package:flutter/material.dart';
 import 'question_screen.dart';
+import 'premium_lock_screen.dart';
 
 class TestSeriesScreen extends StatefulWidget {
   final String examType;
