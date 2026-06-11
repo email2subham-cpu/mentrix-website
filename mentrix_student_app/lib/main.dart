@@ -10,7 +10,7 @@ void main() {
 }
 
 class MentrixApp extends StatelessWidget {
-  const MentrixApp({Key? key}) : super(key: key);
+  const MentrixApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class MentrixApp extends StatelessWidget {
 }
 
 class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +75,10 @@ class HomePage extends StatelessWidget {
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF5B4EE8),
-                      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 40,
+                        vertical: 15,
+                      ),
                     ),
                     onPressed: () {},
                     child: const Text('Get Started'),
@@ -84,7 +87,7 @@ class HomePage extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             // Exam Selection
             Padding(
               padding: const EdgeInsets.all(20),
@@ -102,7 +105,8 @@ class HomePage extends StatelessWidget {
                   GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       crossAxisSpacing: 15,
                       mainAxisSpacing: 15,
@@ -133,67 +137,72 @@ class HomePage extends StatelessWidget {
             ),
 
             // Banner Section + Leaderboard Button
-Padding(
-  padding: const EdgeInsets.all(20),
-  child: Column(
-    children: [
-      // Existing banner
-      Container(
-        padding: const EdgeInsets.all(15),
-        decoration: BoxDecoration(
-          color: Colors.green[50],
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.green, width: 2),
-        ),
-        child: const Row(
-          children: [
-            Icon(Icons.star, color: Colors.green),
-            SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                'New Feature: Answer Keys for WBCHSE are LIVE!',
-                style: TextStyle(
-                  color: Colors.green,
-                  fontWeight: FontWeight.bold,
-                ),
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  // Existing banner
+                  Container(
+                    padding: const EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      color: Colors.green[50],
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.green, width: 2),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.star, color: Colors.green),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'New Feature: Answer Keys for WBCHSE are LIVE!',
+                            style: TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Leaderboard button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LeaderboardScreen(
+                              examType: 'WBCHSE',
+                              subjectName: 'All Subjects',
+                            ),
+                          ),
+                        );
+                      },
+                      icon: const Text('🏆', style: TextStyle(fontSize: 18)),
+                      label: const Text('View Leaderboard'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
       ),
-      
-      const SizedBox(height: 16),
-      
-      // Leaderboard button
-      SizedBox(
-        width: double.infinity,
-        child: ElevatedButton.icon(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const LeaderboardScreen(
-                  examType: 'WBCHSE',
-                  subjectName: 'All Subjects',
-                ),
-              ),
-            );
-          },
-          icon: const Text('🏆', style: TextStyle(fontSize: 18)),
-          label: const Text('View Leaderboard'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.orange,
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-        ),
-      ),
-    ],
-  ),
-),
-k
+    );
+  }
+}
+
 class ExamCard extends StatelessWidget {
   final String name;
   final String icon;
@@ -201,12 +210,12 @@ class ExamCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const ExamCard({
-    Key? key,
+    super.key,
     required this.name,
     required this.icon,
     required this.color,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -242,7 +251,44 @@ class ExamCard extends StatelessWidget {
 class SubjectListPage extends StatelessWidget {
   final String examType;
 
-  const SubjectListPage({Key? key, required this.examType}) : super(key: key);
+  const SubjectListPage({super.key, required this.examType});
+
+  // Get subjects based on exam type
+  List<Map<String, String>> getSubjectsForExam(String examType) {
+    switch (examType) {
+      case 'WBCHSE':
+        return [
+          {'name': 'Physics', 'icon': '⚡'},
+          {'name': 'Chemistry', 'icon': '⚗️'},
+          {'name': 'Biology', 'icon': '🌿'},
+          {'name': 'Mathematics', 'icon': '🔢'},
+          {'name': 'History', 'icon': '📜'},
+          {'name': 'Geography', 'icon': '🌍'},
+          {'name': 'Bengali', 'icon': '📖'},
+          {'name': 'English', 'icon': '🔤'},
+        ];
+      case 'NEET':
+        return [
+          {'name': 'Physics', 'icon': '⚡'},
+          {'name': 'Chemistry', 'icon': '⚗️'},
+          {'name': 'Biology', 'icon': '🌿'},
+        ];
+      case 'JEE Mains':
+        return [
+          {'name': 'Physics', 'icon': '⚡'},
+          {'name': 'Chemistry', 'icon': '⚗️'},
+          {'name': 'Mathematics', 'icon': '🔢'},
+        ];
+      case 'WBJEE':
+        return [
+          {'name': 'Physics', 'icon': '⚡'},
+          {'name': 'Chemistry', 'icon': '⚗️'},
+          {'name': 'Mathematics', 'icon': '🔢'},
+        ];
+      default:
+        return [];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -265,8 +311,11 @@ class SubjectListPage extends StatelessWidget {
         body: TabBarView(
           children: [
             // TAB 1: PRACTICE QUESTIONS
-            PracticeTab(examType: examType),
-            
+            PracticeTab(
+              examType: examType,
+              subjects: getSubjectsForExam(examType),
+            ),
+
             // TAB 2: TEST SERIES
             TestSeriesScreen(
               examType: examType,
@@ -281,22 +330,16 @@ class SubjectListPage extends StatelessWidget {
 
 class PracticeTab extends StatelessWidget {
   final String examType;
+  final List<Map<String, String>> subjects;
 
-  const PracticeTab({Key? key, required this.examType}) : super(key: key);
+  const PracticeTab({
+    super.key,
+    required this.examType,
+    required this.subjects,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final subjects = [
-      {'name': 'Physics', 'icon': '⚡'},
-      {'name': 'Chemistry', 'icon': '⚗️'},
-      {'name': 'Biology', 'icon': '🌿'},
-      {'name': 'Mathematics', 'icon': '🔢'},
-      {'name': 'History', 'icon': '📜'},
-      {'name': 'Geography', 'icon': '🌍'},
-      {'name': 'Bengali', 'icon': '📖'},
-      {'name': 'English', 'icon': '🔤'},
-    ];
-
     return Padding(
       padding: const EdgeInsets.all(15),
       child: GridView.builder(
@@ -336,11 +379,11 @@ class SubjectCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const SubjectCard({
-    Key? key,
+    super.key,
     required this.name,
     required this.icon,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -378,10 +421,10 @@ class ChapterListPage extends StatelessWidget {
   final String subjectName;
 
   const ChapterListPage({
-    Key? key,
+    super.key,
     required this.examType,
     required this.subjectName,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -435,10 +478,10 @@ class ChapterCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const ChapterCard({
-    Key? key,
+    super.key,
     required this.name,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -476,11 +519,11 @@ class TopicListPage extends StatelessWidget {
   final String chapterName;
 
   const TopicListPage({
-    Key? key,
+    super.key,
     required this.examType,
     required this.subjectName,
     required this.chapterName,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -534,10 +577,10 @@ class TopicCard extends StatelessWidget {
   final VoidCallback onTap;
 
   const TopicCard({
-    Key? key,
+    super.key,
     required this.name,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -576,22 +619,25 @@ class SubtopicListPage extends StatelessWidget {
   final String topicName;
 
   const SubtopicListPage({
-    Key? key,
+    super.key,
     required this.examType,
     required this.subjectName,
     required this.chapterName,
     required this.topicName,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
-    // Mock subtopics data
+    // Mock subtopics data with premium flag
     final subtopics = [
-      {'id': 1, 'name': 'Subtopic 1.1.1', 'questions': 12},
-      {'id': 2, 'name': 'Subtopic 1.1.2', 'questions': 15},
-      {'id': 3, 'name': 'Subtopic 1.1.3', 'questions': 18},
-      {'id': 4, 'name': 'Subtopic 1.1.4', 'questions': 20},
+      {'id': 1, 'name': 'Subtopic 1.1.1', 'questions': 12, 'isPremium': false},
+      {'id': 2, 'name': 'Subtopic 1.1.2', 'questions': 15, 'isPremium': false},
+      {'id': 3, 'name': 'Subtopic 1.1.3', 'questions': 18, 'isPremium': true},
+      {'id': 4, 'name': 'Subtopic 1.1.4', 'questions': 20, 'isPremium': true},
     ];
+
+    // Mock: User is NOT premium (change to true to test premium user)
+    bool userIsPremium = false;
 
     return Scaffold(
       appBar: AppBar(
@@ -604,51 +650,62 @@ class SubtopicListPage extends StatelessWidget {
           itemCount: subtopics.length,
           itemBuilder: (context, index) {
             final subtopic = subtopics[index];
+            final isPremium = subtopic['isPremium'] as bool;
+            final isLocked = isPremium && !userIsPremium;
+
             return Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: SubtopicCard(
                 name: subtopic['name'] as String,
                 questions: subtopic['questions'] as int,
+                isLocked: isLocked,
                 onTap: () {
-  // Check if subtopic is premium
-  bool isPremium = index >= 3; // Last 2 are premium (mock)
-  bool userIsPremium = false; // Change to true if user is premium
-  
-  if (isPremium && !userIsPremium) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PremiumLockScreen(
-          lockReason: 'subtopic_limit',
-          examType: examType,
-        ),
-      ),
-    );
-  } else {
-    // Open subtopic normally
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => QuestionScreen(
-          examType: examType,
-          isTestSeries: false,
+                  if (isLocked) {
+                    // Show premium lock screen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PremiumLockScreen(
+                          lockReason: 'subtopic_limit',
+                          examType: examType,
+                        ),
+                      ),
+                    );
+                  } else {
+                    // Open question screen normally
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => QuestionScreen(
+                          examType: examType,
+                          isTestSeries: false,
+                        ),
+                      ),
+                    );
+                  }
+                },
+              ),
+            );
+          },
         ),
       ),
     );
   }
-},
+}
 
 class SubtopicCard extends StatelessWidget {
   final String name;
   final int questions;
+  final bool isLocked;
   final VoidCallback onTap;
 
   const SubtopicCard({
-    Key? key,
+    super.key,
     required this.name,
     required this.questions,
+    required this.isLocked,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -657,34 +714,82 @@ class SubtopicCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.purple[50],
+          color: isLocked ? Colors.grey[100] : Colors.purple[50],
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.purple, width: 2),
+          border: Border.all(
+            color: isLocked ? Colors.grey[400]! : Colors.purple,
+            width: 2,
+          ),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Stack(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  name,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      name,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: isLocked ? Colors.grey[600] : Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '$questions Questions',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: isLocked ? Colors.grey[500] : Colors.grey[600],
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  '$questions Questions',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
+                Row(
+                  children: [
+                    if (isLocked)
+                      Icon(
+                        Icons.lock,
+                        color: Colors.grey[600],
+                        size: 20,
+                      )
+                    else
+                      Icon(
+                        Icons.arrow_forward,
+                        color: Colors.purple,
+                        size: 20,
+                      ),
+                  ],
                 ),
               ],
             ),
-            const Icon(Icons.arrow_forward, color: Colors.purple),
+
+            // Premium badge
+            if (isLocked)
+              Positioned(
+                top: -8,
+                right: -8,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.amber,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Text(
+                    '👑 Premium',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
