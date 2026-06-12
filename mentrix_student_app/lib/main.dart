@@ -6,6 +6,7 @@ import 'screens/leaderboard_screen.dart';
 import 'screens/user_profile_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/refer_and_earn_screen.dart';
+import 'screens/payment_subscription_screen.dart';
 
 void main() {
   runApp(const MentrixApp());
@@ -39,40 +40,40 @@ class HomePage extends StatelessWidget {
       {'name': 'WBJEE', 'icon': '🎯', 'color': Colors.purple},
     ];
 
-    Scaffold(
-  appBar: AppBar(
-  title: const Text('Mentrix'),
-  backgroundColor: const Color(0xFF5B4EE8),
-  elevation: 0,
-  actions: [
-    IconButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const SettingsScreen(),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Mentrix'),
+        backgroundColor: const Color(0xFF5B4EE8),
+        elevation: 0,
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SettingsScreen(),
+                ),
+              );
+            },
+            icon: const Icon(Icons.settings),
           ),
-        );
-      },
-      icon: const Icon(Icons.settings),
-    ),
-    IconButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const UserProfileScreen(
-              userName: 'Subham',
-              userEmail: 'subham@mentrix.com',
-            ),
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const UserProfileScreen(
+                    userName: 'Subham',
+                    userEmail: 'subham@mentrix.com',
+                  ),
+                ),
+              );
+            },
+            icon: const Icon(Icons.person),
           ),
-        );
-      },
-      icon: const Icon(Icons.person),
-    ),
-  ],
-),
-  body: SingleChildScrollView(
+        ],
+      ),
+      body: SingleChildScrollView(
         child: Column(
           children: [
             // Hero Section
@@ -102,22 +103,22 @@ class HomePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   ElevatedButton(
-  style: ElevatedButton.styleFrom(
-    backgroundColor: const Color(0xFF5B4EE8),
-    padding: const EdgeInsets.symmetric(
-      horizontal: 40,
-      vertical: 15,
-    ),
-  ),
-  onPressed: () {
-    // Scroll to exam selection or navigate
-    // For now, just show a snackbar
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Select an exam below to get started!')),
-    );
-  },
-  child: const Text('Get Started'),
-),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF5B4EE8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 40,
+                        vertical: 15,
+                      ),
+                    ),
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Select an exam below to get started!'),
+                        ),
+                      );
+                    },
+                    child: const Text('Get Started'),
+                  ),
                   const SizedBox(height: 20),
                 ],
               ),
@@ -171,114 +172,123 @@ class HomePage extends StatelessWidget {
               ),
             ),
 
-           // Banner Section + Leaderboard Button + Refer & Earn Button
-Padding(
-  padding: const EdgeInsets.all(20),
-  child: Column(
-    children: [
-      // Existing banner
-      Container(
-        padding: const EdgeInsets.all(15),
-        decoration: BoxDecoration(
-          color: Colors.green[50],
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.green, width: 2),
-        ),
-        child: const Row(
-          children: [
-            Icon(Icons.star, color: Colors.green),
-            SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                'New Feature: Answer Keys for WBCHSE are LIVE!',
-                style: TextStyle(
-                  color: Colors.green,
-                  fontWeight: FontWeight.bold,
-                ),
+            // Banner Section + Buttons
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  // Existing banner
+                  Container(
+                    padding: const EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      color: Colors.green[50],
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.green, width: 2),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.star, color: Colors.green),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'New Feature: Answer Keys for WBCHSE are LIVE!',
+                            style: TextStyle(
+                              color: Colors.green,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Leaderboard button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LeaderboardScreen(
+                              examType: 'WBCHSE',
+                              subjectName: 'All Subjects',
+                            ),
+                          ),
+                        );
+                      },
+                      icon: const Text('🏆', style: TextStyle(fontSize: 18)),
+                      label: const Text('View Leaderboard'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Refer & Earn button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ReferAndEarnScreen(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.card_giftcard),
+                      label: const Text('Refer & Earn 🎁'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.amber,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Go Premium button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const PaymentSubscriptionScreen(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.card_giftcard),
+                      label: const Text('Go Premium 👑'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.purple,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
       ),
-      const SizedBox(height: 16),
-
-      // Leaderboard button
-      SizedBox(
-        width: double.infinity,
-        child: ElevatedButton.icon(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const LeaderboardScreen(
-                  examType: 'WBCHSE',
-                  subjectName: 'All Subjects',
-                ),
-              ),
-            );
-          },
-          icon: const Text('🏆', style: TextStyle(fontSize: 18)),
-          label: const Text('View Leaderboard'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.orange,
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-        ),
-      ),
-      const SizedBox(height: 12),
-
-      // Refer & Earn button
-      SizedBox(
-        width: double.infinity,
-        child: ElevatedButton.icon(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const ReferAndEarnScreen(),
-              ),
-            );
-          },
-          icon: const Icon(Icons.card_giftcard),
-          label: const Text('Refer & Earn 🎁'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.amber,
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-                const SizedBox(height: 12),
-
-      // Subscription button (Go Premium)
-      SizedBox(
-        width: double.infinity,
-        child: ElevatedButton.icon(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const PaymentSubscriptionScreen(),
-              ),
-            );
-          },
-          icon: const Icon(Icons.card_giftcard),
-          label: const Text('Go Premium 👑'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.purple,
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-        ),
-      ),
-    ],
-  ),
-),
+    );
+  }
+}
 
 class ExamCard extends StatelessWidget {
   final String name;
@@ -330,7 +340,6 @@ class SubjectListPage extends StatelessWidget {
 
   const SubjectListPage({super.key, required this.examType});
 
-  // Get subjects based on exam type
   List<Map<String, String>> getSubjectsForExam(String examType) {
     switch (examType) {
       case 'WBCHSE':
@@ -387,13 +396,10 @@ class SubjectListPage extends StatelessWidget {
         ),
         body: TabBarView(
           children: [
-            // TAB 1: PRACTICE QUESTIONS
             PracticeTab(
               examType: examType,
               subjects: getSubjectsForExam(examType),
             ),
-
-            // TAB 2: TEST SERIES
             TestSeriesScreen(
               examType: examType,
               subjectName: examType,
@@ -505,7 +511,6 @@ class ChapterListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Mock chapters data
     final chapters = [
       {'id': 1, 'name': 'Chapter 1: Introduction'},
       {'id': 2, 'name': 'Chapter 2: Basics'},
@@ -604,7 +609,6 @@ class TopicListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Mock topics data
     final topics = [
       {'id': 1, 'name': 'Topic 1.1: Basic Concepts'},
       {'id': 2, 'name': 'Topic 1.2: Key Definitions'},
@@ -705,17 +709,13 @@ class SubtopicListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Mock subtopics data with premium flag
     final subtopics = [
-  {'id': 1, 'name': 'Subtopic 1.1.1', 'questions': 12, 'isPremium': false},
-  {'id': 2, 'name': 'Subtopic 1.1.2', 'questions': 15, 'isPremium': false},
-  {'id': 3, 'name': 'Subtopic 1.1.3', 'questions': 18, 'isPremium': true},
-  {'id': 4, 'name': 'Subtopic 1.1.4', 'questions': 20, 'isPremium': true},
-];
+      {'id': 1, 'name': 'Subtopic 1.1.1', 'questions': 12, 'isPremium': false},
+      {'id': 2, 'name': 'Subtopic 1.1.2', 'questions': 15, 'isPremium': false},
+      {'id': 3, 'name': 'Subtopic 1.1.3', 'questions': 18, 'isPremium': true},
+      {'id': 4, 'name': 'Subtopic 1.1.4', 'questions': 20, 'isPremium': true},
+    ];
 
-// Just hardcode isPremium flags directly (no need for logic)
-
-    // Mock: User is NOT premium (change to true to test premium user)
     bool userIsPremium = false;
 
     return Scaffold(
@@ -740,7 +740,6 @@ class SubtopicListPage extends StatelessWidget {
                 isLocked: isLocked,
                 onTap: () {
                   if (isLocked) {
-                    // Show premium lock screen
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -751,7 +750,6 @@ class SubtopicListPage extends StatelessWidget {
                       ),
                     );
                   } else {
-                    // Open question screen normally
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -844,8 +842,6 @@ class SubtopicCard extends StatelessWidget {
                 ),
               ],
             ),
-
-            // Premium badge
             if (isLocked)
               Positioned(
                 top: -8,
