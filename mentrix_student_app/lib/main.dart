@@ -251,6 +251,34 @@ Padding(
               borderRadius: BorderRadius.circular(8),
             ),
           ),
+                const SizedBox(height: 12),
+
+      // Subscription button (Go Premium)
+      SizedBox(
+        width: double.infinity,
+        child: ElevatedButton.icon(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const PaymentSubscriptionScreen(),
+              ),
+            );
+          },
+          icon: const Icon(Icons.card_giftcard),
+          label: const Text('Go Premium 👑'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.purple,
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+),
         ),
       ),
     ],
