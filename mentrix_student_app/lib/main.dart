@@ -37,13 +37,29 @@ class HomePage extends StatelessWidget {
       {'name': 'WBJEE', 'icon': '🎯', 'color': Colors.purple},
     ];
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mentrix'),
-        backgroundColor: const Color(0xFF5B4EE8),
-        elevation: 0,
+    Scaffold(
+  appBar: AppBar(
+    title: const Text('Mentrix'),
+    backgroundColor: const Color(0xFF5B4EE8),
+    elevation: 0,
+    actions: [
+      IconButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const UserProfileScreen(
+                userName: 'Subham',
+                userEmail: 'subham@mentrix.com',
+              ),
+            ),
+          );
+        },
+        icon: const Icon(Icons.person),
       ),
-      body: SingleChildScrollView(
+    ],
+  ),
+  body: SingleChildScrollView(
         child: Column(
           children: [
             // Hero Section
