@@ -439,7 +439,7 @@ class _PaymentSubscriptionScreenState extends State<PaymentSubscriptionScreen> {
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
-                              color: Colors.green[900],
+                              color: Colors.green[900]!,
                             ),
                           ),
                           const SizedBox(height: 2),
