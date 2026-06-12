@@ -40,26 +40,37 @@ class HomePage extends StatelessWidget {
 
     Scaffold(
   appBar: AppBar(
-    title: const Text('Mentrix'),
-    backgroundColor: const Color(0xFF5B4EE8),
-    elevation: 0,
-    actions: [
-      IconButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const UserProfileScreen(
-                userName: 'Subham',
-                userEmail: 'subham@mentrix.com',
-              ),
+  title: const Text('Mentrix'),
+  backgroundColor: const Color(0xFF5B4EE8),
+  elevation: 0,
+  actions: [
+    IconButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const SettingsScreen(),
+          ),
+        );
+      },
+      icon: const Icon(Icons.settings),
+    ),
+    IconButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const UserProfileScreen(
+              userName: 'Subham',
+              userEmail: 'subham@mentrix.com',
             ),
-          );
-        },
-        icon: const Icon(Icons.person),
-      ),
-    ],
-  ),
+          ),
+        );
+      },
+      icon: const Icon(Icons.person),
+    ),
+  ],
+),
   body: SingleChildScrollView(
         child: Column(
           children: [
