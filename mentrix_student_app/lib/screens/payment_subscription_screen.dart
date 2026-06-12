@@ -434,7 +434,7 @@ class _PaymentSubscriptionScreenState extends State<PaymentSubscriptionScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             '7-Day Money Back Guarantee',
                             style: TextStyle(
                               fontSize: 12,
