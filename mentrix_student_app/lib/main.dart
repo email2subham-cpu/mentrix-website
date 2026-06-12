@@ -171,72 +171,91 @@ class HomePage extends StatelessWidget {
               ),
             ),
 
-            // Banner Section + Leaderboard Button
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  // Existing banner
-                  Container(
-                    padding: const EdgeInsets.all(15),
-                    decoration: BoxDecoration(
-                      color: Colors.green[50],
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.green, width: 2),
-                    ),
-                    child: const Row(
-                      children: [
-                        Icon(Icons.star, color: Colors.green),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            'New Feature: Answer Keys for WBCHSE are LIVE!',
-                            style: TextStyle(
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Leaderboard button
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LeaderboardScreen(
-                              examType: 'WBCHSE',
-                              subjectName: 'All Subjects',
-                            ),
-                          ),
-                        );
-                      },
-                      icon: const Text('🏆', style: TextStyle(fontSize: 18)),
-                      label: const Text('View Leaderboard'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.orange,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+           // Banner Section + Leaderboard Button + Refer & Earn Button
+Padding(
+  padding: const EdgeInsets.all(20),
+  child: Column(
+    children: [
+      // Existing banner
+      Container(
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: Colors.green[50],
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: Colors.green, width: 2),
+        ),
+        child: const Row(
+          children: [
+            Icon(Icons.star, color: Colors.green),
+            SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'New Feature: Answer Keys for WBCHSE are LIVE!',
+                style: TextStyle(
+                  color: Colors.green,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-}
+      const SizedBox(height: 16),
+
+      // Leaderboard button
+      SizedBox(
+        width: double.infinity,
+        child: ElevatedButton.icon(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const LeaderboardScreen(
+                  examType: 'WBCHSE',
+                  subjectName: 'All Subjects',
+                ),
+              ),
+            );
+          },
+          icon: const Text('🏆', style: TextStyle(fontSize: 18)),
+          label: const Text('View Leaderboard'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.orange,
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ),
+      ),
+      const SizedBox(height: 12),
+
+      // Refer & Earn button
+      SizedBox(
+        width: double.infinity,
+        child: ElevatedButton.icon(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ReferAndEarnScreen(),
+              ),
+            );
+          },
+          icon: const Icon(Icons.card_giftcard),
+          label: const Text('Refer & Earn 🎁'),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.amber,
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+),
 
 class ExamCard extends StatelessWidget {
   final String name;
