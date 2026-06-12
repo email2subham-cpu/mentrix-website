@@ -279,11 +279,6 @@ Padding(
     ],
   ),
 ),
-        ),
-      ),
-    ],
-  ),
-),
 
 class ExamCard extends StatelessWidget {
   final String name;
