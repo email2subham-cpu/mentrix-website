@@ -1,15 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'providers/theme_provider.dart';
+import 'providers/language_provider.dart';
+import 'providers/exam_constants.dart';
 import 'screens/question_screen.dart';
 import 'screens/test_series_screen.dart';
+import 'screens/results_screen.dart';
 import 'screens/premium_lock_screen.dart';
 import 'screens/leaderboard_screen.dart';
 import 'screens/user_profile_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/refer_and_earn_screen.dart';
 import 'screens/payment_subscription_screen.dart';
+import 'app_theme.dart';
 
 void main() {
-  runApp(const MentrixApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => LanguageProvider()),
+      ],
+      child: const MentrixApp(),
+    ),
+  );
 }
 
 class MentrixApp extends StatelessWidget {
@@ -17,13 +31,17 @@ class MentrixApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Mentrix',
-      theme: ThemeData(
-        primaryColor: const Color(0xFF5B4EE8),
-        useMaterial3: true,
-      ),
-      home: const HomePage(),
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+          title: 'Mentrix',
+          theme: AppTheme.lightTheme(),
+          darkTheme: AppTheme.darkTheme(),
+          themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+          debugShowCheckedModeBanner: false,
+          home: const HomePage(),
+        );
+      },
     );
   }
 }
@@ -33,6 +51,8 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     final exams = [
       {'name': 'WBCHSE', 'icon': '📋', 'color': Colors.blue},
       {'name': 'NEET', 'icon': '🏥', 'color': Colors.green},
@@ -43,7 +63,6 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Mentrix'),
-        backgroundColor: const Color(0xFF5B4EE8),
         elevation: 0,
         actions: [
           IconButton(
@@ -76,50 +95,71 @@ class HomePage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Hero Section
+            // Hero Section with Gradient
             Container(
-              color: const Color(0xFFF0F0FF),
-              padding: const EdgeInsets.all(20),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: isDark
+                      ? [AppTheme.surfaceDark, AppTheme.backgroundDark]
+                      : [AppTheme.primaryLight.withOpacity(0.1), AppTheme.secondaryLight.withOpacity(0.1)],
+                ),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
               child: Column(
                 children: [
-                  const SizedBox(height: 20),
-                  const Text(
+                  Text(
                     'Master Your Exams',
-                    style: TextStyle(
-                      fontSize: 32,
+                    style: Theme.of(context).textTheme.displayMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 10),
-                  const Text(
+                  const SizedBox(height: 12),
+                  Text(
                     'Practice MCQs, Take Tests & Track Progress',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: isDark ? AppTheme.textDarkSecondary : AppTheme.textLightSecondary,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF5B4EE8),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 40,
-                        vertical: 15,
+                  const SizedBox(height: 24),
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: AppTheme.primaryGradient,
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 40,
+                          vertical: 16,
+                        ),
+                      ),
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Select an exam below to get started!'),
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        'Get Started',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Select an exam below to get started!'),
-                        ),
-                      );
-                    },
-                    child: const Text('Get Started'),
                   ),
-                  const SizedBox(height: 20),
                 ],
               ),
             ),
@@ -130,23 +170,19 @@ class HomePage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Select Your Exam',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: Theme.of(context).textTheme.headlineMedium,
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 16),
                   GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       crossAxisSpacing: 15,
                       mainAxisSpacing: 15,
-                      childAspectRatio: 1.2,
+                      childAspectRatio: 1.1,
                     ),
                     itemCount: exams.length,
                     itemBuilder: (context, index) {
@@ -172,29 +208,37 @@ class HomePage extends StatelessWidget {
               ),
             ),
 
-            // Banner Section + Buttons
+            // Action Buttons Section
             Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
-                  // Existing banner
+                  // Banner
                   Container(
-                    padding: const EdgeInsets.all(15),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.green[50],
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.green, width: 2),
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.green.withOpacity(0.2),
+                          Colors.green.withOpacity(0.1),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.green.withOpacity(0.5),
+                        width: 1,
+                      ),
                     ),
-                    child: const Row(
+                    child: Row(
                       children: [
-                        Icon(Icons.star, color: Colors.green),
-                        SizedBox(width: 10),
+                        const Icon(Icons.star, color: Colors.green),
+                        const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            'New Feature: Answer Keys for WBCHSE are LIVE!',
-                            style: TextStyle(
+                            'New: Answer Keys for WBCHSE are LIVE!',
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
                               color: Colors.green,
-                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
@@ -203,7 +247,7 @@ class HomePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
 
-                  // Leaderboard button
+                  // Leaderboard Button
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
@@ -224,14 +268,14 @@ class HomePage extends StatelessWidget {
                         backgroundColor: Colors.orange,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 12),
 
-                  // Refer & Earn button
+                  // Refer & Earn Button
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
@@ -249,14 +293,14 @@ class HomePage extends StatelessWidget {
                         backgroundColor: Colors.amber,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
                     ),
                   ),
                   const SizedBox(height: 12),
 
-                  // Go Premium button
+                  // Go Premium Button
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
@@ -264,8 +308,7 @@ class HomePage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                const PaymentSubscriptionScreen(),
+                            builder: (context) => const PaymentSubscriptionScreen(),
                           ),
                         );
                       },
@@ -275,7 +318,7 @@ class HomePage extends StatelessWidget {
                         backgroundColor: Colors.purple,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(12),
                         ),
                       ),
                     ),
@@ -290,6 +333,7 @@ class HomePage extends StatelessWidget {
   }
 }
 
+// Exam Card with Glassmorphism
 class ExamCard extends StatelessWidget {
   final String name;
   final String icon;
@@ -310,19 +354,21 @@ class ExamCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: color, width: 2),
+          color: color.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: color.withOpacity(0.4),
+            width: 2,
+          ),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(icon, style: const TextStyle(fontSize: 40)),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             Text(
               name,
-              style: const TextStyle(
-                fontSize: 16,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
@@ -383,15 +429,20 @@ class SubjectListPage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text(examType),
-          backgroundColor: const Color(0xFF5B4EE8),
           elevation: 0,
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: 'Practice'),
-              Tab(text: 'Test Series'),
-            ],
-            indicatorColor: Colors.white,
-            indicatorWeight: 3,
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(50),
+            child: Container(
+              color: Theme.of(context).appBarTheme.backgroundColor,
+              child: const TabBar(
+                tabs: [
+                  Tab(text: 'Practice'),
+                  Tab(text: 'Test Series'),
+                ],
+                indicatorColor: Colors.white,
+                indicatorWeight: 3,
+              ),
+            ),
           ),
         ),
         body: TabBarView(
@@ -430,7 +481,7 @@ class PracticeTab extends StatelessWidget {
           crossAxisCount: 2,
           crossAxisSpacing: 15,
           mainAxisSpacing: 15,
-          childAspectRatio: 1.2,
+          childAspectRatio: 1.1,
         ),
         itemCount: subjects.length,
         itemBuilder: (context, index) {
@@ -474,19 +525,21 @@ class SubjectCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.blue[50],
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: Colors.blue, width: 2),
+          color: Colors.blue.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: Colors.blue.withOpacity(0.4),
+            width: 2,
+          ),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(icon, style: const TextStyle(fontSize: 40)),
-            const SizedBox(height: 10),
+            const SizedBox(height: 12),
             Text(
               name,
-              style: const TextStyle(
-                fontSize: 14,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
@@ -522,7 +575,7 @@ class ChapterListPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(subjectName),
-        backgroundColor: const Color(0xFF5B4EE8),
+        elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.all(15),
@@ -572,21 +625,23 @@ class ChapterCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.orange[50],
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.orange, width: 2),
+          color: Colors.orange.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: Colors.orange.withOpacity(0.4),
+            width: 1.5,
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               name,
-              style: const TextStyle(
-                fontSize: 16,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const Icon(Icons.arrow_forward, color: Colors.orange),
+            Icon(Icons.arrow_forward, color: Colors.orange.withOpacity(0.7)),
           ],
         ),
       ),
@@ -619,7 +674,7 @@ class TopicListPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(chapterName),
-        backgroundColor: const Color(0xFF5B4EE8),
+        elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.all(15),
@@ -670,21 +725,23 @@ class TopicCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.green[50],
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.green, width: 2),
+          color: Colors.green.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: Colors.green.withOpacity(0.4),
+            width: 1.5,
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               name,
-              style: const TextStyle(
-                fontSize: 16,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const Icon(Icons.arrow_forward, color: Colors.green),
+            Icon(Icons.arrow_forward, color: Colors.green.withOpacity(0.7)),
           ],
         ),
       ),
@@ -710,10 +767,10 @@ class SubtopicListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final subtopics = [
-      {'id': 1, 'name': 'Subtopic 1.1.1', 'questions': 12, 'isPremium': false},
-      {'id': 2, 'name': 'Subtopic 1.1.2', 'questions': 15, 'isPremium': false},
-      {'id': 3, 'name': 'Subtopic 1.1.3', 'questions': 18, 'isPremium': true},
-      {'id': 4, 'name': 'Subtopic 1.1.4', 'questions': 20, 'isPremium': true},
+      {'id': 1, 'name': 'Subtopic 1.1.1', 'isPremium': false},
+      {'id': 2, 'name': 'Subtopic 1.1.2', 'isPremium': false},
+      {'id': 3, 'name': 'Subtopic 1.1.3', 'isPremium': true},
+      {'id': 4, 'name': 'Subtopic 1.1.4', 'isPremium': true},
     ];
 
     bool userIsPremium = false;
@@ -721,7 +778,7 @@ class SubtopicListPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(topicName),
-        backgroundColor: const Color(0xFF5B4EE8),
+        elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.all(15),
@@ -736,7 +793,7 @@ class SubtopicListPage extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 12),
               child: SubtopicCard(
                 name: subtopic['name'] as String,
-                questions: subtopic['questions'] as int,
+                questionCount: ExamConstants.getQuestionCount(examType, subjectName),
                 isLocked: isLocked,
                 onTap: () {
                   if (isLocked) {
@@ -772,14 +829,14 @@ class SubtopicListPage extends StatelessWidget {
 
 class SubtopicCard extends StatelessWidget {
   final String name;
-  final int questions;
+  final int questionCount;
   final bool isLocked;
   final VoidCallback onTap;
 
   const SubtopicCard({
     super.key,
     required this.name,
-    required this.questions,
+    required this.questionCount,
     required this.isLocked,
     required this.onTap,
   });
@@ -788,85 +845,77 @@ class SubtopicCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isLocked ? Colors.grey[100] : Colors.purple[50],
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: isLocked ? Colors.grey[400]! : Colors.purple,
-            width: 2,
-          ),
-        ),
-        child: Stack(
-          children: [
-            Row(
+      child: Stack(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: isLocked
+                  ? Colors.grey.withOpacity(0.1)
+                  : Colors.purple.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isLocked
+                    ? Colors.grey.withOpacity(0.4)
+                    : Colors.purple.withOpacity(0.4),
+                width: 1.5,
+              ),
+            ),
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      name,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: isLocked ? Colors.grey[600] : Colors.black87,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: isLocked ? Colors.grey : null,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '$questions Questions',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: isLocked ? Colors.grey[500] : Colors.grey[600],
+                      const SizedBox(height: 4),
+                      Text(
+                        '$questionCount Questions',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: isLocked ? Colors.grey : Colors.grey,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-                Row(
-                  children: [
-                    if (isLocked)
-                      Icon(
-                        Icons.lock,
-                        color: Colors.grey[600],
-                        size: 20,
-                      )
-                    else
-                      Icon(
-                        Icons.arrow_forward,
-                        color: Colors.purple,
-                        size: 20,
-                      ),
-                  ],
+                Icon(
+                  isLocked ? Icons.lock : Icons.arrow_forward,
+                  color: isLocked ? Colors.grey : Colors.purple.withOpacity(0.7),
                 ),
               ],
             ),
-            if (isLocked)
-              Positioned(
-                top: -8,
-                right: -8,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.amber,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Text(
-                    '👑 Premium',
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+          ),
+          if (isLocked)
+            Positioned(
+              top: -8,
+              right: -8,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.amber,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Text(
+                  '👑 Premium',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
               ),
-          ],
-        ),
+            ),
+        ],
       ),
     );
   }
