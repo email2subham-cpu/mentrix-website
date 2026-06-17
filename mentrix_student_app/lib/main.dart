@@ -12,7 +12,7 @@ import 'screens/user_profile_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/refer_and_earn_screen.dart';
 import 'screens/payment_subscription_screen.dart';
-import 'app_theme.dart';
+import 'providers/app_theme.dart';
 
 void main() {
   runApp(
