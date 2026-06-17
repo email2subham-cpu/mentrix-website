@@ -122,20 +122,20 @@ class _QuestionScreenState extends State<QuestionScreen> {
     } else {
       // Test completed
       Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ResultsScreen(
-            examType: widget.examType,
-            correctAnswers: correctAnswers,
-            wrongAnswers: wrongAnswers,
-            skippedAnswers: skippedAnswers,
-            totalQuestions: questions.length,
-            timeTaken: stopwatch.elapsed,
-          ),
-        ),
-      );
-    }
-  }
+  context,
+  MaterialPageRoute(
+    builder: (context) => ResultsScreen(
+      examType: widget.examType,
+      correctAnswers: correctAnswers,
+      wrongAnswers: wrongAnswers,
+      skippedQuestions: skippedAnswers,
+      totalQuestions: questions.length,
+      totalTimeSpent: stopwatch.elapsed.inSeconds,
+      isTestSeries: widget.isTestSeries,
+      testName: '${widget.examType} Practice',
+    ),
+  ),
+);
 
   @override
   void dispose() {
