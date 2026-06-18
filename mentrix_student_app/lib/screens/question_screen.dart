@@ -136,7 +136,9 @@ class _QuestionScreenState extends State<QuestionScreen> {
     ),
   ),
 );
-
+   }
+  }
+  
   @override
   void dispose() {
     stopwatch.stop();
