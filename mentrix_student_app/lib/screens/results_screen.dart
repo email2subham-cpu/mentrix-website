@@ -7,12 +7,12 @@ class ResultsScreen extends StatefulWidget {
   final int correctAnswers;
   final int wrongAnswers;
   final int skippedQuestions;
-  final int totalTimeSpent; // in seconds
+  final int totalTimeSpent;
   final bool isTestSeries;
   final String testName;
 
   const ResultsScreen({
-    Key? key,
+    super.key,
     required this.examType,
     required this.totalQuestions,
     required this.correctAnswers,
@@ -21,279 +21,351 @@ class ResultsScreen extends StatefulWidget {
     required this.totalTimeSpent,
     required this.isTestSeries,
     required this.testName,
-  }) : super(key: key);
+  });
 
   @override
   State<ResultsScreen> createState() => _ResultsScreenState();
 }
 
-class _ResultsScreenState extends State<ResultsScreen> {
+class _ResultsScreenState extends State<ResultsScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _scoreAnimation;
   late int scorePercentage;
-  late int percentileRank;
   late String performanceLevel;
   late Color performanceColor;
+  late String performanceEmoji;
+  late int percentileRank;
 
   @override
   void initState() {
     super.initState();
     calculateResults();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    );
+    _scoreAnimation = Tween<double>(
+      begin: 0,
+      end: scorePercentage / 100,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeOutCubic,
+    ));
+    _animationController.forward();
   }
 
   void calculateResults() {
-    // Calculate percentage
-    scorePercentage = ((widget.correctAnswers / widget.totalQuestions) * 100).toInt();
+    scorePercentage = widget.totalQuestions > 0
+        ? ((widget.correctAnswers / widget.totalQuestions) * 100).round()
+        : 0;
 
-    // Calculate percentile rank (mock calculation)
-    // In real app, this would come from backend
-    percentileRank = Random().nextInt(40) + (scorePercentage ~/ 2);
-    if (percentileRank > 99) percentileRank = 99;
+    percentileRank = Random().nextInt(30) + 70; // Mock percentile
 
-    // Determine performance level
-    if (scorePercentage >= 80) {
-      performanceLevel = 'Outstanding';
+    if (scorePercentage >= 90) {
+      performanceLevel = 'Excellent! 🌟';
       performanceColor = Colors.green;
-    } else if (scorePercentage >= 60) {
-      performanceLevel = 'Good';
+      performanceEmoji = '🏆';
+    } else if (scorePercentage >= 75) {
+      performanceLevel = 'Great Job! 👍';
       performanceColor = Colors.blue;
-    } else if (scorePercentage >= 40) {
-      performanceLevel = 'Average';
+      performanceEmoji = '😊';
+    } else if (scorePercentage >= 60) {
+      performanceLevel = 'Good Effort! 💪';
       performanceColor = Colors.orange;
+      performanceEmoji = '🙂';
+    } else if (scorePercentage >= 40) {
+      performanceLevel = 'Keep Practicing! 📚';
+      performanceColor = Colors.orange[700]!;
+      performanceEmoji = '😐';
     } else {
-      performanceLevel = 'Needs Improvement';
+      performanceLevel = 'Need Improvement! 💡';
       performanceColor = Colors.red;
+      performanceEmoji = '😟';
     }
   }
 
   String formatTime(int seconds) {
-    int minutes = seconds ~/ 60;
-    int secs = seconds % 60;
-    return '${minutes}m ${secs}s';
+    final minutes = seconds ~/ 60;
+    final remainingSeconds = seconds % 60;
+    return '${minutes}m ${remainingSeconds}s';
   }
 
-  double getAverageTimePerQuestion() {
-    return widget.totalTimeSpent / widget.totalQuestions;
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final averageTimePerQuestion = getAverageTimePerQuestion();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return WillPopScope(
-      onWillPop: () async => false, // Prevent back button
+    return PopScope(
+      canPop: false,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Test Results'),
-          backgroundColor: performanceColor,
+          title: const Text('Results'),
           elevation: 0,
           automaticallyImplyLeading: false,
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              },
+              child: const Text(
+                'Home',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
         ),
         body: SingleChildScrollView(
           child: Column(
             children: [
-              // Main Score Card
+              // Score Header
               Container(
-                color: performanceColor,
-                padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+                width: double.infinity,
+                padding: const EdgeInsets.all(30),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      performanceColor.withOpacity(0.8),
+                      performanceColor.withOpacity(0.4),
+                    ],
+                  ),
+                ),
                 child: Column(
                   children: [
                     Text(
+                      performanceEmoji,
+                      style: const TextStyle(fontSize: 60),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
                       performanceLevel,
                       style: const TextStyle(
-                        fontSize: 28,
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
+                      textAlign: TextAlign.center,
                     ),
-                    const SizedBox(height: 16),
-
-                    // Large score display
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Column(
-                        children: [
-                          Text(
-                            '${widget.correctAnswers}/${widget.totalQuestions}',
-                            style: const TextStyle(
-                              fontSize: 48,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '$scorePercentage%',
-                            style: const TextStyle(
-                              fontSize: 32,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
+                    const SizedBox(height: 8),
+                    Text(
+                      widget.testName,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.white70,
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 24),
 
-                    // Percentile rank
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        'You are in top ${percentileRank}%',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
+                    // Score Circle
+                    AnimatedBuilder(
+                      animation: _scoreAnimation,
+                      builder: (context, child) {
+                        return Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            SizedBox(
+                              width: 140,
+                              height: 140,
+                              child: CircularProgressIndicator(
+                                value: _scoreAnimation.value,
+                                strokeWidth: 12,
+                                backgroundColor: Colors.white.withOpacity(0.3),
+                                valueColor: const AlwaysStoppedAnimation<Color>(
+                                  Colors.white,
+                                ),
+                              ),
+                            ),
+                            Column(
+                              children: [
+                                Text(
+                                  '${(_scoreAnimation.value * 100).round()}%',
+                                  style: const TextStyle(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const Text(
+                                  'Score',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.white70,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      },
                     ),
                   ],
                 ),
               ),
 
-              // Score Breakdown
+              // Stats Grid
               Padding(
                 padding: const EdgeInsets.all(20),
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[50],
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey[300]!),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Score Breakdown',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-
-                      // Correct answers
-                      ScoreBreakdownItem(
-                        icon: '✅',
-                        label: 'Correct',
-                        value: widget.correctAnswers.toString(),
-                        color: Colors.green,
-                        percentage: (widget.correctAnswers / widget.totalQuestions) * 100,
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Wrong answers
-                      ScoreBreakdownItem(
-                        icon: '❌',
-                        label: 'Wrong',
-                        value: widget.wrongAnswers.toString(),
-                        color: Colors.red,
-                        percentage: (widget.wrongAnswers / widget.totalQuestions) * 100,
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Skipped questions
-                      ScoreBreakdownItem(
-                        icon: '⏭️',
-                        label: 'Skipped',
-                        value: widget.skippedQuestions.toString(),
-                        color: Colors.orange,
-                        percentage: (widget.skippedQuestions / widget.totalQuestions) * 100,
-                      ),
-                    ],
-                  ),
+                child: GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 1.5,
+                  children: [
+                    _buildStatCard(
+                      context,
+                      icon: '✅',
+                      label: 'Correct',
+                      value: '${widget.correctAnswers}',
+                      color: Colors.green,
+                      isDark: isDark,
+                    ),
+                    _buildStatCard(
+                      context,
+                      icon: '❌',
+                      label: 'Wrong',
+                      value: '${widget.wrongAnswers}',
+                      color: Colors.red,
+                      isDark: isDark,
+                    ),
+                    _buildStatCard(
+                      context,
+                      icon: '⏭️',
+                      label: 'Skipped',
+                      value: '${widget.skippedQuestions}',
+                      color: Colors.orange,
+                      isDark: isDark,
+                    ),
+                    _buildStatCard(
+                      context,
+                      icon: '⏱️',
+                      label: 'Time Taken',
+                      value: formatTime(widget.totalTimeSpent),
+                      color: Colors.blue,
+                      isDark: isDark,
+                    ),
+                  ],
                 ),
               ),
 
-              // Time Analysis
+              // Performance Analysis
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.blue[50],
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.blue[300]!),
+                    color: isDark ? const Color(0xFF1A1A2E) : Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Colors.blue.withOpacity(0.3),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Time Analysis',
-                        style: TextStyle(
-                          fontSize: 18,
+                      Text(
+                        '📊 Performance Analysis',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 16),
 
-                      // Total time
-                      TimeAnalysisItem(
-                        label: 'Total Time Spent',
-                        value: formatTime(widget.totalTimeSpent),
-                        icon: '⏱️',
+                      // Correct answers bar
+                      _buildAnalysisBar(
+                        context,
+                        label: 'Correct',
+                        value: widget.correctAnswers,
+                        total: widget.totalQuestions,
+                        color: Colors.green,
                       ),
                       const SizedBox(height: 12),
 
-                      // Average time per question
-                      TimeAnalysisItem(
-                        label: 'Average Time per Question',
-                        value: '${averageTimePerQuestion.toStringAsFixed(1)}s',
-                        icon: '⏲️',
+                      // Wrong answers bar
+                      _buildAnalysisBar(
+                        context,
+                        label: 'Wrong',
+                        value: widget.wrongAnswers,
+                        total: widget.totalQuestions,
+                        color: Colors.red,
                       ),
                       const SizedBox(height: 12),
 
-                      // Expected time (mock)
-                      TimeAnalysisItem(
-                        label: 'Expected Time',
-                        value: formatTime((widget.totalQuestions * 90)), // 90 sec per question
-                        icon: '📊',
+                      // Skipped answers bar
+                      _buildAnalysisBar(
+                        context,
+                        label: 'Skipped',
+                        value: widget.skippedQuestions,
+                        total: widget.totalQuestions,
+                        color: Colors.orange,
                       ),
                     ],
                   ),
                 ),
               ),
 
-              // Performance Tips
+              const SizedBox(height: 20),
+
+              // Percentile Card
               Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.purple[50],
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.purple[300]!),
+                    gradient: LinearGradient(
+                      colors: [
+                        const Color(0xFF5B4EE8).withOpacity(0.15),
+                        const Color(0xFF00D9FF).withOpacity(0.15),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: const Color(0xFF5B4EE8).withOpacity(0.3),
+                    ),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Row(
                     children: [
-                      const Text(
-                        'Performance Tips',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                      const Text('🎯', style: TextStyle(fontSize: 40)),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Percentile Rank',
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Better than $percentileRank% of students',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 12),
                       Text(
-                        _getPerformanceTip(),
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey[700],
-                          height: 1.5,
+                        '$percentileRank%',
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF5B4EE8),
                         ),
                       ),
                     ],
@@ -301,46 +373,107 @@ class _ResultsScreenState extends State<ResultsScreen> {
                 ),
               ),
 
+              const SizedBox(height: 20),
+
+              // Quick Summary
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF1A1A2E) : Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Colors.grey.withOpacity(0.2),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '📝 Quick Summary',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildSummaryRow(
+                        context,
+                        'Total Questions',
+                        '${widget.totalQuestions}',
+                      ),
+                      const Divider(),
+                      _buildSummaryRow(
+                        context,
+                        'Score',
+                        '${widget.correctAnswers}/${widget.totalQuestions}',
+                      ),
+                      const Divider(),
+                      _buildSummaryRow(
+                        context,
+                        'Percentage',
+                        '$scorePercentage%',
+                      ),
+                      const Divider(),
+                      _buildSummaryRow(
+                        context,
+                        'Time Taken',
+                        formatTime(widget.totalTimeSpent),
+                      ),
+                      const Divider(),
+                      _buildSummaryRow(
+                        context,
+                        'Exam Type',
+                        widget.examType,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
               // Action Buttons
               Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
-                    // Retry button
+                    // Retake Test Button
                     SizedBox(
                       width: double.infinity,
-                      child: ElevatedButton(
+                      child: ElevatedButton.icon(
                         onPressed: () {
                           Navigator.pop(context);
-                          Navigator.pop(context); // Go back to test/practice
                         },
+                        icon: const Icon(Icons.replay),
+                        label: const Text('Retake Test'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: performanceColor,
+                          backgroundColor: const Color(0xFF5B4EE8),
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: const Text(
-                          'Retake Test',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                       ),
                     ),
                     const SizedBox(height: 12),
 
-                    // Go back button
+                    // Go Home Button
                     SizedBox(
                       width: double.infinity,
-                      child: OutlinedButton(
+                      child: OutlinedButton.icon(
                         onPressed: () {
-                          Navigator.pop(context);
-                          Navigator.pop(context); // Go back to test/practice selection
+                          Navigator.of(context).popUntil((route) => route.isFirst);
                         },
+                        icon: const Icon(Icons.home),
+                        label: const Text('Go Home'),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           side: const BorderSide(
@@ -348,15 +481,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
                             width: 2,
                           ),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: const Text(
-                          'Go Back',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF5B4EE8),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
                       ),
@@ -364,6 +489,8 @@ class _ResultsScreenState extends State<ResultsScreen> {
                   ],
                 ),
               ),
+
+              const SizedBox(height: 24),
             ],
           ),
         ),
@@ -371,133 +498,106 @@ class _ResultsScreenState extends State<ResultsScreen> {
     );
   }
 
-  String _getPerformanceTip() {
-    if (scorePercentage >= 80) {
-      return '🌟 Excellent performance! You have mastered this topic. Try harder questions to improve further.';
-    } else if (scorePercentage >= 60) {
-      return '👍 Good job! Review the topics you missed and practice more similar questions.';
-    } else if (scorePercentage >= 40) {
-      return '📚 You need more practice. Go back and study the concepts again before retaking the test.';
-    } else {
-      return '⚠️ Please review all the concepts thoroughly. Consider taking the practice questions first before retaking this test.';
-    }
+  Widget _buildStatCard(
+    BuildContext context, {
+    required String icon,
+    required String label,
+    required String value,
+    required Color color,
+    required bool isDark,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: color.withOpacity(0.3),
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(icon, style: const TextStyle(fontSize: 24)),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
+      ),
+    );
   }
-}
 
-class ScoreBreakdownItem extends StatelessWidget {
-  final String icon;
-  final String label;
-  final String value;
-  final Color color;
-  final double percentage;
-
-  const ScoreBreakdownItem({
-    Key? key,
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.color,
-    required this.percentage,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildAnalysisBar(
+    BuildContext context, {
+    required String label,
+    required int value,
+    required int total,
+    required Color color,
+  }) {
+    final percentage = total > 0 ? value / total : 0.0;
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Text(icon, style: const TextStyle(fontSize: 20)),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      label,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    Text(
-                      '${percentage.toStringAsFixed(0)}%',
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+            Text(
+              label,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
             Text(
-              value,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
+              '$value/$total (${(percentage * 100).round()}%)',
+              style: Theme.of(context).textTheme.bodySmall,
             ),
           ],
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
         ClipRRect(
           borderRadius: BorderRadius.circular(4),
           child: LinearProgressIndicator(
-            value: percentage / 100,
-            backgroundColor: color.withOpacity(0.2),
+            value: percentage,
+            backgroundColor: Colors.grey.withOpacity(0.2),
             valueColor: AlwaysStoppedAnimation<Color>(color),
-            minHeight: 6,
+            minHeight: 8,
           ),
         ),
       ],
     );
   }
-}
 
-class TimeAnalysisItem extends StatelessWidget {
-  final String label;
-  final String value;
-  final String icon;
-
-  const TimeAnalysisItem({
-    Key? key,
-    required this.label,
-    required this.value,
-    required this.icon,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            Text(icon, style: const TextStyle(fontSize: 18)),
-            const SizedBox(width: 12),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-            ),
-          ],
-        ),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.bold,
-            color: Colors.blue,
+  Widget _buildSummaryRow(
+    BuildContext context,
+    String label,
+    String value,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
-        ),
-      ],
+          Text(
+            value,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
