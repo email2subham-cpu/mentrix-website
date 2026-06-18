@@ -1,194 +1,401 @@
  import 'package:flutter/material.dart';
+import '../providers/exam_constants.dart';
 import 'question_screen.dart';
 import 'premium_lock_screen.dart';
+import 'results_screen.dart';
 
 class TestSeriesScreen extends StatefulWidget {
   final String examType;
   final String subjectName;
 
   const TestSeriesScreen({
-    Key? key,
+    super.key,
     required this.examType,
     required this.subjectName,
-  }) : super(key: key);
+  });
 
   @override
   State<TestSeriesScreen> createState() => _TestSeriesScreenState();
 }
 
 class _TestSeriesScreenState extends State<TestSeriesScreen> {
-  // Mock test series data
-  late List<Map<String, dynamic>> testSeries;
+  bool userIsPremium = false;
 
-  @override
-  void initState() {
-    super.initState();
-    loadMockTests();
-  }
-
-  void loadMockTests() {
-    testSeries = [
-      {
-        'id': 1,
-        'name': 'Mock Test 1: Basic Concepts',
-        'description': 'Test your understanding of basic concepts',
-        'totalQuestions': 50,
-        'duration': 75, // minutes
-        'difficulty': 'Easy',
-        'isPremium': false,
-        'attempts': 2,
-        'bestScore': 42,
-        'bestScorePercentage': 84,
-        'lastAttempted': '2 days ago',
-        'topics': 'Chapter 1-3',
-      },
-      {
-        'id': 2,
-        'name': 'Mock Test 2: Intermediate Level',
-        'description': 'Test intermediate concepts and problem solving',
-        'totalQuestions': 50,
-        'duration': 75,
-        'difficulty': 'Medium',
-        'isPremium': false,
-        'attempts': 1,
-        'bestScore': 35,
-        'bestScorePercentage': 70,
-        'lastAttempted': '5 days ago',
-        'topics': 'Chapter 4-6',
-      },
-      {
-        'id': 3,
-        'name': 'Mock Test 3: Advanced Concepts',
-        'description': 'Test advanced topics and critical thinking',
-        'totalQuestions': 50,
-        'duration': 75,
-        'difficulty': 'Hard',
-        'isPremium': true,
-        'attempts': 0,
-        'bestScore': 0,
-        'bestScorePercentage': 0,
-        'lastAttempted': 'Never',
-        'topics': 'Chapter 7-9',
-      },
-      {
-        'id': 4,
-        'name': 'Mock Test 4: Full Syllabus',
-        'description': 'Complete test covering entire syllabus',
-        'totalQuestions': 100,
-        'duration': 120,
-        'difficulty': 'Hard',
-        'isPremium': true,
-        'attempts': 0,
-        'bestScore': 0,
-        'bestScorePercentage': 0,
-        'lastAttempted': 'Never',
-        'topics': 'All Chapters',
-      },
-      {
-        'id': 5,
-        'name': 'Previous Year Question 2023',
-        'description': 'Actual exam questions from 2023',
-        'totalQuestions': 50,
-        'duration': 75,
-        'difficulty': 'Hard',
-        'isPremium': false,
-        'attempts': 3,
-        'bestScore': 38,
-        'bestScorePercentage': 76,
-        'lastAttempted': '1 week ago',
-        'topics': 'All topics',
-      },
-    ];
+  List<Map<String, dynamic>> getTestSeries() {
+    switch (widget.examType) {
+      case 'JEE Mains':
+        return [
+          {
+            'id': 1,
+            'subject': 'Physics',
+            'name': 'JEE Physics Full Test',
+            'questions': ExamConstants.getQuestionCount('JEE Mains', 'Physics'),
+            'duration': ExamConstants.getExamDuration('JEE Mains'),
+            'isPremium': false,
+            'bestScore': 18,
+            'attempts': 2,
+            'icon': '⚡',
+            'color': Colors.blue,
+          },
+          {
+            'id': 2,
+            'subject': 'Chemistry',
+            'name': 'JEE Chemistry Full Test',
+            'questions': ExamConstants.getQuestionCount('JEE Mains', 'Chemistry'),
+            'duration': ExamConstants.getExamDuration('JEE Mains'),
+            'isPremium': false,
+            'bestScore': 20,
+            'attempts': 1,
+            'icon': '⚗️',
+            'color': Colors.green,
+          },
+          {
+            'id': 3,
+            'subject': 'Mathematics',
+            'name': 'JEE Mathematics Full Test',
+            'questions': ExamConstants.getQuestionCount('JEE Mains', 'Mathematics'),
+            'duration': ExamConstants.getExamDuration('JEE Mains'),
+            'isPremium': true,
+            'bestScore': 0,
+            'attempts': 0,
+            'icon': '🔢',
+            'color': Colors.orange,
+          },
+        ];
+      case 'NEET':
+        return [
+          {
+            'id': 1,
+            'subject': 'Physics',
+            'name': 'NEET Physics Full Test',
+            'questions': ExamConstants.getQuestionCount('NEET', 'Physics'),
+            'duration': ExamConstants.getExamDuration('NEET'),
+            'isPremium': false,
+            'bestScore': 35,
+            'attempts': 3,
+            'icon': '⚡',
+            'color': Colors.blue,
+          },
+          {
+            'id': 2,
+            'subject': 'Chemistry',
+            'name': 'NEET Chemistry Full Test',
+            'questions': ExamConstants.getQuestionCount('NEET', 'Chemistry'),
+            'duration': ExamConstants.getExamDuration('NEET'),
+            'isPremium': false,
+            'bestScore': 40,
+            'attempts': 2,
+            'icon': '⚗️',
+            'color': Colors.green,
+          },
+          {
+            'id': 3,
+            'subject': 'Biology',
+            'name': 'NEET Biology Full Test',
+            'questions': ExamConstants.getQuestionCount('NEET', 'Biology'),
+            'duration': ExamConstants.getExamDuration('NEET'),
+            'isPremium': true,
+            'bestScore': 0,
+            'attempts': 0,
+            'icon': '🌿',
+            'color': Colors.teal,
+          },
+        ];
+      case 'WBJEE':
+        return [
+          {
+            'id': 1,
+            'subject': 'Physics',
+            'name': 'WBJEE Physics Full Test',
+            'questions': ExamConstants.getQuestionCount('WBJEE', 'Physics'),
+            'duration': ExamConstants.getExamDuration('WBJEE'),
+            'isPremium': false,
+            'bestScore': 30,
+            'attempts': 2,
+            'icon': '⚡',
+            'color': Colors.blue,
+          },
+          {
+            'id': 2,
+            'subject': 'Chemistry',
+            'name': 'WBJEE Chemistry Full Test',
+            'questions': ExamConstants.getQuestionCount('WBJEE', 'Chemistry'),
+            'duration': ExamConstants.getExamDuration('WBJEE'),
+            'isPremium': false,
+            'bestScore': 25,
+            'attempts': 1,
+            'icon': '⚗️',
+            'color': Colors.green,
+          },
+          {
+            'id': 3,
+            'subject': 'Mathematics',
+            'name': 'WBJEE Mathematics Full Test',
+            'questions': ExamConstants.getQuestionCount('WBJEE', 'Mathematics'),
+            'duration': ExamConstants.getExamDuration('WBJEE'),
+            'isPremium': true,
+            'bestScore': 0,
+            'attempts': 0,
+            'icon': '🔢',
+            'color': Colors.orange,
+          },
+        ];
+      case 'WBCHSE':
+      default:
+        return [
+          {
+            'id': 1,
+            'subject': 'Physics',
+            'name': 'WBCHSE Physics Full Test',
+            'questions': ExamConstants.getQuestionCount('WBCHSE', 'Physics'),
+            'duration': ExamConstants.getExamDuration('WBCHSE'),
+            'isPremium': false,
+            'bestScore': 28,
+            'attempts': 2,
+            'icon': '⚡',
+            'color': Colors.blue,
+          },
+          {
+            'id': 2,
+            'subject': 'Chemistry',
+            'name': 'WBCHSE Chemistry Full Test',
+            'questions': ExamConstants.getQuestionCount('WBCHSE', 'Chemistry'),
+            'duration': ExamConstants.getExamDuration('WBCHSE'),
+            'isPremium': false,
+            'bestScore': 30,
+            'attempts': 1,
+            'icon': '⚗️',
+            'color': Colors.green,
+          },
+          {
+            'id': 3,
+            'subject': 'Biology',
+            'name': 'WBCHSE Biology Full Test',
+            'questions': ExamConstants.getQuestionCount('WBCHSE', 'Biology'),
+            'duration': ExamConstants.getExamDuration('WBCHSE'),
+            'isPremium': false,
+            'bestScore': 25,
+            'attempts': 1,
+            'icon': '🌿',
+            'color': Colors.teal,
+          },
+          {
+            'id': 4,
+            'subject': 'Mathematics',
+            'name': 'WBCHSE Mathematics Full Test',
+            'questions': ExamConstants.getQuestionCount('WBCHSE', 'Mathematics'),
+            'duration': ExamConstants.getExamDuration('WBCHSE'),
+            'isPremium': true,
+            'bestScore': 0,
+            'attempts': 0,
+            'icon': '🔢',
+            'color': Colors.orange,
+          },
+          {
+            'id': 5,
+            'subject': 'History',
+            'name': 'WBCHSE History Full Test',
+            'questions': ExamConstants.getQuestionCount('WBCHSE', 'History'),
+            'duration': ExamConstants.getExamDuration('WBCHSE'),
+            'isPremium': true,
+            'bestScore': 0,
+            'attempts': 0,
+            'icon': '📜',
+            'color': Colors.brown,
+          },
+          {
+            'id': 6,
+            'subject': 'Geography',
+            'name': 'WBCHSE Geography Full Test',
+            'questions': ExamConstants.getQuestionCount('WBCHSE', 'Geography'),
+            'duration': ExamConstants.getExamDuration('WBCHSE'),
+            'isPremium': true,
+            'bestScore': 0,
+            'attempts': 0,
+            'icon': '🌍',
+            'color': Colors.indigo,
+          },
+          {
+            'id': 7,
+            'subject': 'Bengali',
+            'name': 'WBCHSE Bengali Full Test',
+            'questions': ExamConstants.getQuestionCount('WBCHSE', 'Bengali'),
+            'duration': ExamConstants.getExamDuration('WBCHSE'),
+            'isPremium': true,
+            'bestScore': 0,
+            'attempts': 0,
+            'icon': '📖',
+            'color': Colors.purple,
+          },
+          {
+            'id': 8,
+            'subject': 'English',
+            'name': 'WBCHSE English Full Test',
+            'questions': ExamConstants.getQuestionCount('WBCHSE', 'English'),
+            'duration': ExamConstants.getExamDuration('WBCHSE'),
+            'isPremium': true,
+            'bestScore': 0,
+            'attempts': 0,
+            'icon': '🔤',
+            'color': Colors.red,
+          },
+        ];
+    }
   }
 
   void startTest(Map<String, dynamic> test) {
-  // Check if premium test and user is not premium
-  bool userIsPremium = false; // Change to true if user has premium
-  
-  if (test['isPremium'] && !userIsPremium) {
+    final isPremium = test['isPremium'] as bool;
+    final isLocked = isPremium && !userIsPremium;
+
+    if (isLocked) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PremiumLockScreen(
+            lockReason: 'test_limit',
+            examType: widget.examType,
+          ),
+        ),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => QuestionScreen(
+            examType: widget.examType,
+            isTestSeries: true,
+          ),
+        ),
+      );
+    }
+  }
+
+  void retakeTest(Map<String, dynamic> test) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => PremiumLockScreen(
-          lockReason: 'test_series',
+        builder: (context) => QuestionScreen(
           examType: widget.examType,
+          isTestSeries: true,
         ),
       ),
     );
-    return;
   }
-
-  // Start the test
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => QuestionScreen(
-        examType: widget.examType,
-        isTestSeries: true,
-      ),
-    ),
-  );
-}
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final tests = getTestSeries();
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('${widget.subjectName} - Test Series'),
-        backgroundColor: const Color(0xFF5B4EE8),
-        elevation: 0,
-      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Header section
+            // Header
             Container(
-              color: const Color(0xFF5B4EE8),
+              width: double.infinity,
               padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: isDark
+                      ? [const Color(0xFF1A1A2E), const Color(0xFF0D0D1F)]
+                      : [const Color(0xFF5B4EE8).withOpacity(0.1), const Color(0xFF00D9FF).withOpacity(0.1)],
+                ),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.examType,
-                    style: const TextStyle(
-                      fontSize: 28,
+                    '${widget.examType} Test Series',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '${testSeries.length} Tests Available',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.white70,
-                    ),
+                    'Subject-wise full mock tests',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      _buildStatChip(context, '${tests.length}', 'Tests'),
+                      const SizedBox(width: 12),
+                      _buildStatChip(
+                        context,
+                        '${tests.where((t) => t['attempts'] > 0).length}',
+                        'Attempted',
+                      ),
+                      const SizedBox(width: 12),
+                      _buildStatChip(
+                        context,
+                        '${tests.where((t) => t['isPremium'] == true).length}',
+                        'Premium',
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
 
-            // Test list
+            const SizedBox(height: 20),
+
+            // Test Cards
             Padding(
-              padding: const EdgeInsets.all(15),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
-                children: List.generate(
-                  testSeries.length,
-                  (index) {
-                    final test = testSeries[index];
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: TestCard(
-                        test: test,
-                        onStartTest: () => startTest(test),
-                      ),
-                    );
-                  },
-                ),
+                children: tests.map((test) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16),
+                    child: TestCard(
+                      test: test,
+                      userIsPremium: userIsPremium,
+                      onStart: () => startTest(test),
+                      onRetake: () => retakeTest(test),
+                    ),
+                  );
+                }).toList(),
               ),
             ),
+
+            const SizedBox(height: 24),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildStatChip(BuildContext context, String value, String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFF5B4EE8).withOpacity(0.15),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: const Color(0xFF5B4EE8).withOpacity(0.3),
+        ),
+      ),
+      child: Row(
+        children: [
+          Text(
+            value,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF5B4EE8),
+              fontSize: 14,
+            ),
+          ),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey[600],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -196,343 +403,247 @@ class _TestSeriesScreenState extends State<TestSeriesScreen> {
 
 class TestCard extends StatelessWidget {
   final Map<String, dynamic> test;
-  final VoidCallback onStartTest;
+  final bool userIsPremium;
+  final VoidCallback onStart;
+  final VoidCallback onRetake;
 
   const TestCard({
-    Key? key,
+    super.key,
     required this.test,
-    required this.onStartTest,
-  }) : super(key: key);
+    required this.userIsPremium,
+    required this.onStart,
+    required this.onRetake,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isPremium = test['isPremium'] as bool;
+    final isLocked = isPremium && !userIsPremium;
+    final attempts = test['attempts'] as int;
+    final bestScore = test['bestScore'] as int;
+    final questions = test['questions'] as int;
+    final color = test['color'] as Color;
+    final bestScorePercentage = questions > 0 ? (bestScore / questions) : 0.0;
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        color: isDark ? const Color(0xFF1A1A2E) : Colors.white,
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.grey[300]!,
+          color: isLocked
+              ? Colors.grey.withOpacity(0.3)
+              : color.withOpacity(0.3),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
         children: [
-          // Test header
+          // Card Header
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: test['isPremium']
-                  ? Colors.amber[50]
-                  : Colors.blue[50],
+              gradient: LinearGradient(
+                colors: isLocked
+                    ? [Colors.grey.withOpacity(0.1), Colors.grey.withOpacity(0.05)]
+                    : [color.withOpacity(0.15), color.withOpacity(0.05)],
+              ),
               borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(11),
-                topRight: Radius.circular(11),
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
               ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                // Title with premium badge
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Text(
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: isLocked
+                        ? Colors.grey.withOpacity(0.2)
+                        : color.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    test['icon'],
+                    style: const TextStyle(fontSize: 24),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
                         test['name'],
-                        style: const TextStyle(
-                          fontSize: 16,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: isLocked ? Colors.grey : null,
                         ),
                       ),
-                    ),
-                    if (test['isPremium'])
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.amber,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Text(
-                          '👑 Premium',
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.quiz_outlined,
+                            size: 14,
+                            color: Colors.grey[600],
                           ),
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  test['description'],
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[700],
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Test details
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                // Key stats in grid
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    TestStatItem(
-                      icon: '❓',
-                      label: 'Questions',
-                      value: test['totalQuestions'].toString(),
-                    ),
-                    TestStatItem(
-                      icon: '⏱️',
-                      label: 'Duration',
-                      value: '${test['duration']} min',
-                    ),
-                    TestStatItem(
-                      icon: '📊',
-                      label: 'Difficulty',
-                      value: test['difficulty'],
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                // Topics covered
-                Row(
-                  children: [
-                    Text(
-                      'Topics: ',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey[700],
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        test['topics'],
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-
-                // Performance if attempted
-                if (test['attempts'] > 0)
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.green[50],
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: Colors.green[300]!),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Best Score',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.grey[700],
-                              ),
-                            ),
-                            Text(
-                              '${test['bestScore']}/${test['totalQuestions']} (${test['bestScorePercentage']}%)',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.green,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-
-                        // Progress bar
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(4),
-                          child: LinearProgressIndicator(
-                            value: test['bestScorePercentage'] / 100,
-                            backgroundColor: Colors.green[200],
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.green[600]!,
-                            ),
-                            minHeight: 6,
+                          const SizedBox(width: 4),
+                          Text(
+                            '$questions Questions',
+                            style: Theme.of(context).textTheme.bodySmall,
                           ),
-                        ),
-                        const SizedBox(height: 8),
-
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Attempts: ${test['attempts']}',
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                            Text(
-                              'Last: ${test['lastAttempted']}',
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  )
-                else
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Center(
-                      child: Text(
-                        'Not attempted yet',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey[600],
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-
-          // Start button
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  // If already attempted, show "Retake Test" dialog
-                  if (test['attempts'] > 0) {
-                    showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Retake Test?'),
-                        content: Text(
-                          'You have already attempted this test.\n\nYour best score: ${test['bestScore']}/${test['totalQuestions']}\n\nDo you want to retake it?',
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('Cancel'),
+                          const SizedBox(width: 12),
+                          Icon(
+                            Icons.timer_outlined,
+                            size: 14,
+                            color: Colors.grey[600],
                           ),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              onStartTest();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF5B4EE8),
-                            ),
-                            child: const Text('Retake'),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${test['duration']} mins',
+                            style: Theme.of(context).textTheme.bodySmall,
                           ),
                         ],
                       ),
-                    );
-                  } else {
-                    onStartTest();
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: test['isPremium'] = true
-                      ? Colors.amber
-                      : const Color(0xFF5B4EE8),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    ],
                   ),
                 ),
-                child: Text(
-                  test['attempts'] > 0 ? 'Retake Test' : 'Start Test',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                if (isLocked)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.amber,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Text(
+                      '👑 Premium',
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
+              ],
+            ),
+          ),
+
+          // Card Body
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                // Progress (if attempted)
+                if (attempts > 0) ...[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Best Score: $bestScore/$questions',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        '${(bestScorePercentage * 100).toStringAsFixed(0)}%',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: bestScorePercentage >= 0.7
+                              ? Colors.green
+                              : bestScorePercentage >= 0.5
+                                  ? Colors.orange
+                                  : Colors.red,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: LinearProgressIndicator(
+                      value: bestScorePercentage,
+                      backgroundColor: Colors.grey.withOpacity(0.2),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        bestScorePercentage >= 0.7
+                            ? Colors.green
+                            : bestScorePercentage >= 0.5
+                                ? Colors.orange
+                                : Colors.red,
+                      ),
+                      minHeight: 6,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Attempts: $attempts',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  const SizedBox(height: 12),
+                ],
+
+                // Buttons
+                Row(
+                  children: [
+                    if (attempts > 0) ...[
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: onRetake,
+                          icon: const Icon(Icons.replay, size: 16),
+                          label: const Text('Retake'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: color,
+                            side: BorderSide(color: color),
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                    ],
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: onStart,
+                        icon: Icon(
+                          isLocked ? Icons.lock : Icons.play_arrow,
+                          size: 16,
+                        ),
+                        label: Text(
+                          isLocked
+                              ? 'Unlock'
+                              : attempts > 0
+                                  ? 'Start Again'
+                                  : 'Start Test',
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: isLocked ? Colors.amber : color,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
+              ],
             ),
           ),
         ],
       ),
-    );
-  }
-}
-
-class TestStatItem extends StatelessWidget {
-  final String icon;
-  final String label;
-  final String value;
-
-  const TestStatItem({
-    Key? key,
-    required this.icon,
-    required this.label,
-    required this.value,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          icon,
-          style: const TextStyle(fontSize: 20),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 11,
-            color: Colors.grey[600],
-          ),
-        ),
-      ],
     );
   }
 }
