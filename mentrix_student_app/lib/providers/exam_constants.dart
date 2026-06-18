@@ -62,4 +62,8 @@ class ExamConstants {
     }
   }
 
-  // Get exam
+    // Get exam duration
+  static int getExamDuration(String examType) {
+    return examDuration[examType] ?? 60;
+  }
+}
