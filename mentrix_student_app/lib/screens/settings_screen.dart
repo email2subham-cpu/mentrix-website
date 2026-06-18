@@ -1,175 +1,220 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/theme_provider.dart';
+import '../providers/language_provider.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({Key? key}) : super(key: key);
+  const SettingsScreen({super.key});
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  String selectedLanguage = 'English'; // English or Bengali
   bool notificationsEnabled = true;
-  bool darkModeEnabled = false;
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final languageProvider = Provider.of<LanguageProvider>(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
-        backgroundColor: const Color(0xFF5B4EE8),
         elevation: 0,
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Language Settings
-            Padding(
+            // Header
+            Container(
+              width: double.infinity,
               padding: const EdgeInsets.all(20),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.blue[50],
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.blue[300]!),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: isDark
+                      ? [const Color(0xFF1A1A2E), const Color(0xFF0D0D1F)]
+                      : [const Color(0xFF5B4EE8).withOpacity(0.1), const Color(0xFF00D9FF).withOpacity(0.1)],
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Language',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF5B4EE8).withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Text('⚙️', style: TextStyle(fontSize: 24)),
+                  ),
+                  const SizedBox(width: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Settings',
+                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
-                    DropdownButton<String>(
-                      value: selectedLanguage,
-                      isExpanded: true,
-                      items: ['English', 'Bengali'].map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedLanguage = newValue ?? 'English';
-                        });
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Language changed to $newValue'),
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
+                      Text(
+                        'Customize your experience',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
 
-            // Notifications Settings
+            const SizedBox(height: 20),
+
+            // Appearance Section
+            _buildSectionHeader(context, 'Appearance'),
+            const SizedBox(height: 12),
+
+            // Dark Mode Toggle
+            _buildToggleCard(
+              context,
+              icon: '🌙',
+              title: 'Dark Mode',
+              subtitle: 'Switch between light and dark theme',
+              value: themeProvider.isDarkMode,
+              onChanged: (value) {
+                themeProvider.setDarkMode(value);
+              },
+              color: Colors.indigo,
+            ),
+
+            const SizedBox(height: 20),
+
+            // Language Section
+            _buildSectionHeader(context, 'Language'),
+            const SizedBox(height: 12),
+
+            // Language Toggle
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.green[50],
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.green[300]!),
+                  color: isDark
+                      ? const Color(0xFF1A1A2E)
+                      : Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Colors.blue.withOpacity(0.3),
+                    width: 1,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.blue.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Text('🌐', style: TextStyle(fontSize: 20)),
+                        ),
+                        const SizedBox(width: 12),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Push Notifications',
-                              style: TextStyle(
-                                fontSize: 16,
+                            Text(
+                              'Question Language',
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black87,
                               ),
                             ),
-                            const SizedBox(height: 4),
                             Text(
-                              'Get test reminders and updates',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey[600],
-                              ),
+                              'Switch questions between languages',
+                              style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ],
-                        ),
-                        Switch(
-                          value: notificationsEnabled,
-                          onChanged: (value) {
-                            setState(() {
-                              notificationsEnabled = value;
-                            });
-                          },
-                          activeColor: Colors.green,
                         ),
                       ],
                     ),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Dark Mode Settings
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey[300]!),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+                    const SizedBox(height: 16),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Dark Mode',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              languageProvider.setLanguage('English');
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              decoration: BoxDecoration(
+                                color: languageProvider.isEnglish
+                                    ? const Color(0xFF5B4EE8)
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: languageProvider.isEnglish
+                                      ? const Color(0xFF5B4EE8)
+                                      : Colors.grey.withOpacity(0.3),
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  '🇬🇧 English',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: languageProvider.isEnglish
+                                        ? Colors.white
+                                        : null,
+                                  ),
+                                ),
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Reduce eye strain at night',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                        Switch(
-                          value: darkModeEnabled,
-                          onChanged: (value) {
-                            setState(() {
-                              darkModeEnabled = value;
-                            });
-                          },
-                          activeColor: Colors.purple,
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              languageProvider.setLanguage('Bengali');
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              decoration: BoxDecoration(
+                                color: languageProvider.isBengali
+                                    ? const Color(0xFF5B4EE8)
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: languageProvider.isBengali
+                                      ? const Color(0xFF5B4EE8)
+                                      : Colors.grey.withOpacity(0.3),
+                                ),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  '🇧🇩 বাংলা',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: languageProvider.isBengali
+                                        ? Colors.white
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -180,257 +225,233 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             const SizedBox(height: 20),
 
-            // Subscription Settings
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: SettingsButton(
-                icon: '💳',
-                title: 'Update Subscription',
-                subtitle: 'Manage your premium membership',
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Update Subscription'),
-                      content: const Text(
-                        'Subscription management page will open here.\n\nYou can upgrade, downgrade, or cancel your subscription.',
+            // Notifications Section
+            _buildSectionHeader(context, 'Notifications'),
+            const SizedBox(height: 12),
+
+            _buildToggleCard(
+              context,
+              icon: '🔔',
+              title: 'Push Notifications',
+              subtitle: 'Get test reminders and updates',
+              value: notificationsEnabled,
+              onChanged: (value) {
+                setState(() {
+                  notificationsEnabled = value;
+                });
+              },
+              color: Colors.orange,
+            ),
+
+            const SizedBox(height: 20),
+
+            // Account Section
+            _buildSectionHeader(context, 'Account'),
+            const SizedBox(height: 12),
+
+            _buildMenuCard(
+              context,
+              icon: '💳',
+              title: 'Update Subscription',
+              subtitle: 'Manage your premium membership',
+              color: Colors.purple,
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Update Subscription'),
+                    content: const Text('Subscription management coming soon!'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Close'),
                       ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('Close'),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
+                    ],
+                  ),
+                );
+              },
             ),
 
             const SizedBox(height: 12),
 
-            // Help & FAQs
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: SettingsButton(
-                icon: '❓',
-                title: 'Help & FAQs',
-                subtitle: 'Get answers to common questions',
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Help & FAQs'),
-                      content: const SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'Frequently Asked Questions',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                              ),
-                            ),
-                            SizedBox(height: 12),
-                            FAQItem(
-                              question: 'How do I reset my password?',
-                              answer:
-                                  'Go to login page and click "Forgot Password"',
-                            ),
-                            FAQItem(
-                              question: 'How do I get credits?',
-                              answer:
-                                  'Solve questions, take tests, or refer friends',
-                            ),
-                            FAQItem(
-                              question: 'Can I download content?',
-                              answer:
-                                  'Offline download is coming soon for premium users',
-                            ),
-                            FAQItem(
-                              question: 'How do I contact support?',
-                              answer: 'Email: support@mentrix.com',
-                            ),
-                          ],
-                        ),
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('Close'),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-
+            // Support Section
+            _buildSectionHeader(context, 'Support'),
             const SizedBox(height: 12),
 
-            // Privacy Policy
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: SettingsButton(
-                icon: '🔒',
-                title: 'Privacy Policy',
-                subtitle: 'Read our privacy practices',
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Privacy Policy'),
-                      content: SingleChildScrollView(
-                        child: Text(
-                          'Privacy Policy for Mentrix\n\n'
-                          '1. Data Collection\n'
-                          'We collect personal information like email, name, and progress data.\n\n'
-                          '2. Data Usage\n'
-                          'Your data is used to personalize your learning experience and improve our service.\n\n'
-                          '3. Data Protection\n'
-                          'We use industry-standard encryption to protect your data.\n\n'
-                          '4. Third-party Sharing\n'
-                          'We do not sell your personal data to third parties.\n\n'
-                          '5. User Rights\n'
-                          'You can request to view, modify, or delete your data anytime.\n\n'
-                          'For full details, visit: www.mentrix.com/privacy',
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('Close'),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-
-            const SizedBox(height: 12),
-
-            // Terms & Conditions
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: SettingsButton(
-                icon: '📜',
-                title: 'Terms & Conditions',
-                subtitle: 'Review our terms of service',
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Terms & Conditions'),
-                      content: SingleChildScrollView(
-                        child: Text(
-                          'Terms & Conditions for Mentrix\n\n'
-                          '1. Service Usage\n'
-                          'You agree to use Mentrix for educational purposes only.\n\n'
-                          '2. User Conduct\n'
-                          'You agree not to share answers, cheat, or misuse the platform.\n\n'
-                          '3. Intellectual Property\n'
-                          'All content on Mentrix is owned by Mentrix or its partners.\n\n'
-                          '4. Limitation of Liability\n'
-                          'Mentrix is not liable for any indirect damages.\n\n'
-                          '5. Account Termination\n'
-                          'We reserve the right to terminate accounts that violate these terms.\n\n'
-                          '6. Changes to Terms\n'
-                          'We may update these terms anytime.\n\n'
-                          'For full terms, visit: www.mentrix.com/terms',
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('Close'),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-
-            const SizedBox(height: 12),
-
-            // About App
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: SettingsButton(
-                icon: 'ℹ️',
-                title: 'About Mentrix',
-                subtitle: 'Learn about our app',
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('About Mentrix'),
-                      content: Column(
+            _buildMenuCard(
+              context,
+              icon: '❓',
+              title: 'Help & FAQs',
+              subtitle: 'Get answers to common questions',
+              color: Colors.blue,
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Help & FAQs'),
+                    content: const SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text(
-                            '📱 Mentrix',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          FAQItem(
+                            question: 'How do I reset my password?',
+                            answer: 'Go to login page and click "Forgot Password"',
                           ),
-                          const SizedBox(height: 12),
-                          const Text(
-                            'Version 1.0.0',
-                            style: TextStyle(fontSize: 12),
+                          FAQItem(
+                            question: 'How do I get credits?',
+                            answer: 'Solve questions, take tests, or refer friends',
                           ),
-                          const SizedBox(height: 12),
-                          const Text(
-                            'Master Your Exams - Practice MCQs, Take Tests & Track Progress',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 13,
-                              color: Colors.grey,
-                            ),
+                          FAQItem(
+                            question: 'Can I download content?',
+                            answer: 'Offline download coming soon for premium users',
                           ),
-                          const SizedBox(height: 16),
-                          const Text(
-                            'Mentrix is a comprehensive exam preparation platform for WBCHSE, NEET, JEE, and WBJEE.\n\n'
-                            '© 2024 Mentrix. All rights reserved.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              IconButton(
-                                onPressed: () {},
-                                icon: const Text('🌐'),
-                              ),
-                              IconButton(
-                                onPressed: () {},
-                                icon: const Text('📧'),
-                              ),
-                              IconButton(
-                                onPressed: () {},
-                                icon: const Text('📱'),
-                              ),
-                            ],
+                          FAQItem(
+                            question: 'How do I contact support?',
+                            answer: 'Email: support@mentrix.com',
                           ),
                         ],
                       ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text('Close'),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Close'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+
+            const SizedBox(height: 12),
+
+            _buildMenuCard(
+              context,
+              icon: '🔒',
+              title: 'Privacy Policy',
+              subtitle: 'Read our privacy practices',
+              color: Colors.green,
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Privacy Policy'),
+                    content: SingleChildScrollView(
+                      child: Text(
+                        'Privacy Policy for Mentrix\n\n'
+                        '1. Data Collection\n'
+                        'We collect personal information like email, name, and progress data.\n\n'
+                        '2. Data Usage\n'
+                        'Your data is used to personalize your learning experience.\n\n'
+                        '3. Data Protection\n'
+                        'We use industry-standard encryption to protect your data.\n\n'
+                        '4. Third-party Sharing\n'
+                        'We do not sell your personal data to third parties.\n\n'
+                        '5. User Rights\n'
+                        'You can request to view, modify, or delete your data anytime.\n\n'
+                        'For full details, visit: www.mentrix.com/privacy',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Close'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+
+            const SizedBox(height: 12),
+
+            _buildMenuCard(
+              context,
+              icon: '📜',
+              title: 'Terms & Conditions',
+              subtitle: 'Review our terms of service',
+              color: Colors.teal,
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('Terms & Conditions'),
+                    content: SingleChildScrollView(
+                      child: Text(
+                        'Terms & Conditions for Mentrix\n\n'
+                        '1. Service Usage\n'
+                        'You agree to use Mentrix for educational purposes only.\n\n'
+                        '2. User Conduct\n'
+                        'You agree not to share answers or misuse the platform.\n\n'
+                        '3. Intellectual Property\n'
+                        'All content on Mentrix is owned by Mentrix or its partners.\n\n'
+                        '4. Account Termination\n'
+                        'We reserve the right to terminate accounts that violate terms.\n\n'
+                        'For full terms, visit: www.mentrix.com/terms',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Close'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+
+            const SizedBox(height: 12),
+
+            _buildMenuCard(
+              context,
+              icon: 'ℹ️',
+              title: 'About Mentrix',
+              subtitle: 'Version 1.0.0',
+              color: Colors.indigo,
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text('About Mentrix'),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text('📱', style: TextStyle(fontSize: 48)),
+                        const SizedBox(height: 12),
+                        const Text(
+                          'Mentrix',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Text('Version 1.0.0'),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Master Your Exams - Practice MCQs, Take Tests & Track Progress',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '© 2024 Mentrix. All rights reserved.',
+                          style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ],
                     ),
-                  );
-                },
-              ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Close'),
+                      ),
+                    ],
+                  ),
+                );
+              },
             ),
 
             const SizedBox(height: 20),
@@ -446,8 +467,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       context: context,
                       builder: (context) => AlertDialog(
                         title: const Text('Logout'),
-                        content:
-                            const Text('Are you sure you want to logout?'),
+                        content: const Text('Are you sure you want to logout?'),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.pop(context),
@@ -456,11 +476,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           ElevatedButton(
                             onPressed: () {
                               Navigator.pop(context);
-                              Navigator.pop(context); // Go back to home
+                              Navigator.pop(context);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content:
-                                      Text('Logged out successfully!'),
+                                  content: Text('Logged out successfully!'),
                                 ),
                               );
                             },
@@ -473,16 +492,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     );
                   },
-                  icon: const Icon(Icons.logout),
-                  label: const Text('Logout'),
+                  icon: const Icon(Icons.logout, color: Colors.red),
+                  label: const Text(
+                    'Logout',
+                    style: TextStyle(color: Colors.red),
+                  ),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    side: const BorderSide(
-                      color: Colors.red,
-                      width: 2,
-                    ),
+                    side: const BorderSide(color: Colors.red, width: 2),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                 ),
@@ -495,72 +514,154 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
     );
   }
-}
 
-class SettingsButton extends StatelessWidget {
-  final String icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
+  Widget _buildSectionHeader(BuildContext context, String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Text(
+        title,
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: const Color(0xFF5B4EE8),
+          letterSpacing: 1.2,
+        ),
+      ),
+    );
+  }
 
-  const SettingsButton({
-    Key? key,
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
+  Widget _buildToggleCard(
+    BuildContext context, {
+    required String icon,
+    required String title,
+    required String subtitle,
+    required bool value,
+    required ValueChanged<bool> onChanged,
+    required Color color,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey[300]!),
+          color: isDark ? const Color(0xFF1A1A2E) : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: color.withOpacity(0.3),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Text(
-                  icon,
-                  style: const TextStyle(fontSize: 24),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(icon, style: const TextStyle(fontSize: 20)),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+            Switch(
+              value: value,
+              onChanged: onChanged,
+              activeColor: const Color(0xFF5B4EE8),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMenuCard(
+    BuildContext context, {
+    required String icon,
+    required String title,
+    required String subtitle,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF1A1A2E) : Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: color.withOpacity(0.3),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                const SizedBox(width: 16),
-                Column(
+                child: Text(icon, style: const TextStyle(fontSize: 20)),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
-                        fontSize: 14,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
                       ),
                     ),
-                    const SizedBox(height: 4),
                     Text(
                       subtitle,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey[600],
-                      ),
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
                 ),
-              ],
-            ),
-            Icon(
-              Icons.arrow_forward,
-              color: Colors.grey[600],
-              size: 20,
-            ),
-          ],
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                color: color.withOpacity(0.7),
+                size: 16,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -572,10 +673,10 @@ class FAQItem extends StatelessWidget {
   final String answer;
 
   const FAQItem({
-    Key? key,
+    super.key,
     required this.question,
     required this.answer,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -589,7 +690,6 @@ class FAQItem extends StatelessWidget {
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
             ),
           ),
           const SizedBox(height: 4),
@@ -597,7 +697,7 @@ class FAQItem extends StatelessWidget {
             'A: $answer',
             style: TextStyle(
               fontSize: 11,
-              color: Colors.grey[700],
+              color: Colors.grey[600],
             ),
           ),
         ],
