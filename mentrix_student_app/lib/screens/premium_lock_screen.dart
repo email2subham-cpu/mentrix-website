@@ -1,106 +1,96 @@
 import 'package:flutter/material.dart';
+import 'payment_subscription_screen.dart';
 
-class PremiumLockScreen extends StatefulWidget {
-  final String lockReason; // 'subtopic_limit', 'test_limit', 'test_series', etc.
+class PremiumLockScreen extends StatelessWidget {
+  final String lockReason;
   final String examType;
 
   const PremiumLockScreen({
-    Key? key,
+    super.key,
     required this.lockReason,
     required this.examType,
-  }) : super(key: key);
+  });
 
-  @override
-  State<PremiumLockScreen> createState() => _PremiumLockScreenState();
-}
+  String get lockTitle {
+    switch (lockReason) {
+      case 'subtopic_limit':
+        return 'Subtopic Locked';
+      case 'test_limit':
+        return 'Test Locked';
+      default:
+        return 'Premium Content';
+    }
+  }
 
-class _PremiumLockScreenState extends State<PremiumLockScreen> {
-  String selectedPlan = 'monthly'; // 'monthly', 'quarterly', 'yearly'
+  String get lockMessage {
+    switch (lockReason) {
+      case 'subtopic_limit':
+        return 'You\'ve used your 2 free subtopics. Upgrade to Premium to unlock unlimited practice questions!';
+      case 'test_limit':
+        return 'You\'ve used your 2 free tests. Upgrade to Premium to unlock unlimited mock tests!';
+      default:
+        return 'This content is available for Premium members only. Upgrade now to unlock!';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
+      appBar: AppBar(
+        title: Text(lockTitle),
+        elevation: 0,
+      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Header with close button
+            // Header
             Container(
-              color: const Color(0xFF5B4EE8),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF5B4EE8), Color(0xFF7C6EFF)],
+                ),
+              ),
+              padding: const EdgeInsets.all(30),
+              child: Column(
                 children: [
+                  // Lock Icon with glow
+                  Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white.withOpacity(0.3),
+                        width: 2,
+                      ),
+                    ),
+                    child: const Center(
+                      child: Text('👑', style: TextStyle(fontSize: 50)),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                   const Text(
                     'Upgrade to Premium',
                     style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: const Icon(
-                      Icons.close,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Lock reason message
-            Container(
-              color: Colors.amber[50],
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  const Icon(Icons.lock, color: Colors.amber, size: 24),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      _getLockMessage(),
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.amber[900],
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Crown icon
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 24),
-              child: Text(
-                '👑',
-                style: const TextStyle(fontSize: 64),
-              ),
-            ),
-
-            // Main message
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                children: [
-                  const Text(
-                    'Go Premium Today!',
-                    style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color: Colors.white,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
                   Text(
-                    'Unlock unlimited access to all questions, tests, and features',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey[700],
+                    lockMessage,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.white70,
+                      height: 1.5,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -108,193 +98,183 @@ class _PremiumLockScreenState extends State<PremiumLockScreen> {
               ),
             ),
 
-            const SizedBox(height: 30),
-
-            // Features comparison
+            // Benefits Section
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.all(20),
               child: Container(
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[300]!),
-                  borderRadius: BorderRadius.circular(12),
+                  color: isDark ? const Color(0xFF1A1A2E) : Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: const Color(0xFF5B4EE8).withOpacity(0.3),
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Header row
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(11),
-                          topRight: Radius.circular(11),
-                        ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              'Features',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey[700],
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Center(
-                              child: Text(
-                                'Free',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey[700],
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Center(
-                              child: Text(
-                                'Premium',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blue,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+                    Text(
+                      '✨ Premium Benefits',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-
-                    // Feature rows
-                    ..._buildFeatureRows(),
+                    const SizedBox(height: 16),
+                    _buildBenefit(context, '∞', 'Unlimited Practice Questions',
+                        'Access all questions across all subjects', Colors.blue),
+                    const SizedBox(height: 12),
+                    _buildBenefit(context, '📝', 'Unlimited Mock Tests',
+                        'Take as many tests as you want', Colors.green),
+                    const SizedBox(height: 12),
+                    _buildBenefit(context, '📊', 'Detailed Analytics',
+                        'Track your progress in detail', Colors.orange),
+                    const SizedBox(height: 12),
+                    _buildBenefit(context, '🎥', 'Video Solutions',
+                        'Learn from detailed video explanations', Colors.purple),
+                    const SizedBox(height: 12),
+                    _buildBenefit(context, '🏆', 'Leaderboard Access',
+                        'Compete with students across India', Colors.amber),
+                    const SizedBox(height: 12),
+                    _buildBenefit(context, '🚫', 'Ad-Free Experience',
+                        'Study without any distractions', Colors.red),
                   ],
                 ),
               ),
             ),
 
-            const SizedBox(height: 30),
-
-            // Pricing plans
+            // Pricing Plans
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Choose Your Plan',
-                    style: TextStyle(
-                      fontSize: 18,
+                  Text(
+                    'Simple Pricing',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
                     ),
                   ),
                   const SizedBox(height: 16),
 
-                  // Monthly plan
-                  PricingPlanCard(
+                  // Monthly
+                  _buildPricingCard(
+                    context,
                     name: 'Monthly',
                     price: '₹99',
                     period: 'per month',
                     savings: null,
-                    isSelected: selectedPlan == 'monthly',
-                    onTap: () {
-                      setState(() {
-                        selectedPlan = 'monthly';
-                      });
-                    },
+                    color: Colors.blue,
+                    isDark: isDark,
+                    isBestValue: false,
                   ),
                   const SizedBox(height: 12),
 
-                  // Quarterly plan (best value)
-                  PricingPlanCard(
+                  // Quarterly
+                  _buildPricingCard(
+                    context,
                     name: 'Quarterly',
                     price: '₹249',
                     period: 'per 3 months',
-                    savings: 'Save 15%',
-                    isSelected: selectedPlan == 'quarterly',
+                    savings: 'Save 16%',
+                    color: Colors.purple,
+                    isDark: isDark,
                     isBestValue: true,
-                    onTap: () {
-                      setState(() {
-                        selectedPlan = 'quarterly';
-                      });
-                    },
                   ),
                   const SizedBox(height: 12),
 
-                  // Yearly plan (best value)
-                  PricingPlanCard(
+                  // Yearly
+                  _buildPricingCard(
+                    context,
                     name: 'Yearly',
                     price: '₹799',
                     period: 'per year',
                     savings: 'Save 33%',
-                    isSelected: selectedPlan == 'yearly',
+                    color: Colors.green,
+                    isDark: isDark,
                     isBestValue: false,
-                    onTap: () {
-                      setState(() {
-                        selectedPlan = 'yearly';
-                      });
-                    },
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
 
-            // Benefits
+            // Guarantee
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.green[50]!,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.green[300]!),
+                  color: Colors.green.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Colors.green.withOpacity(0.3),
+                  ),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
                   children: [
-                   Text(
-                      'Premium Benefits:',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green[900]!,
+                    const Icon(
+                      Icons.verified_user,
+                      color: Colors.green,
+                      size: 28,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '7-Day Money Back Guarantee',
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.green,
+                            ),
+                          ),
+                          Text(
+                            'Not satisfied? Get a full refund within 7 days.',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    ..._buildBenefits(),
                   ],
                 ),
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
 
-            // Upgrade button
+            // Upgrade Button
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    showUpgradeConfirmationDialog(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const PaymentSubscriptionScreen(),
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF5B4EE8),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   child: const Text(
-                    'Upgrade Now',
+                    'Upgrade to Premium 👑',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -307,7 +287,7 @@ class _PremiumLockScreenState extends State<PremiumLockScreen> {
 
             const SizedBox(height: 12),
 
-            // Continue free button
+            // Continue Free
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: SizedBox(
@@ -321,11 +301,11 @@ class _PremiumLockScreenState extends State<PremiumLockScreen> {
                       width: 2,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   child: const Text(
-                    'Continue Free Version',
+                    'Continue as Free User',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -336,412 +316,160 @@ class _PremiumLockScreenState extends State<PremiumLockScreen> {
               ),
             ),
 
-            const SizedBox(height: 20),
-
-            // Trust badge
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.verified_user, size: 16, color: Colors.green),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Secure Payment | 7-Day Money Back Guarantee',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
           ],
         ),
       ),
     );
   }
 
-  List<Widget> _buildFeatureRows() {
-    final features = [
-      {'name': 'Practice Questions', 'free': '2/subject', 'premium': 'Unlimited'},
-      {'name': 'Mock Tests', 'free': '2/exam', 'premium': 'Unlimited'},
-      {'name': 'Test Series', 'free': 'Basic', 'premium': 'All'},
-      {'name': 'Performance Analytics', 'free': 'Limited', 'premium': 'Detailed'},
-      {'name': 'Previous Year Papers', 'free': 'No', 'premium': 'Yes'},
-      {'name': 'Video Solutions', 'free': 'No', 'premium': 'Yes'},
-      {'name': 'Doubt Support', 'free': 'No', 'premium': 'Yes'},
-      {'name': 'Ad-Free Experience', 'free': 'No', 'premium': 'Yes'},
-    ];
-
-    return features.map((feature) {
-      return Column(
-        children: [
-          Divider(height: 1, color: Colors.grey[300]),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Expanded(
-                  child: Text(
-                    feature['name']!,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Center(
-                    child: Text(
-                      feature['free']!,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Center(
-                    child: Icon(
-                      Icons.check_circle,
-                      color: Colors.green,
-                      size: 18,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+  Widget _buildBenefit(
+    BuildContext context,
+    String icon,
+    String title,
+    String subtitle,
+    Color color,
+  ) {
+    return Row(
+      children: [
+        Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(10),
           ),
-        ],
-      );
-    }).toList();
-  }
-
-  List<Widget> _buildBenefits() {
-    final benefits = [
-      'Unlimited access to all practice questions',
-      'Unlimited mock tests across all exams',
-      'Detailed performance analytics & insights',
-      'Previous year question papers',
-      'Video solutions for all questions',
-      'Priority doubt support',
-      'Ad-free experience',
-      'Offline download (coming soon)',
-    ];
-
-    return benefits
-        .map((benefit) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.check,
-                    color: Colors.green,
-                    size: 16,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      benefit,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[700],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ))
-        .toList();
-  }
-
-  String _getLockMessage() {
-    switch (widget.lockReason) {
-      case 'subtopic_limit':
-        return 'You have used your free subtopic limit. Upgrade to access more!';
-      case 'test_limit':
-        return 'You have used your free test limit. Upgrade for unlimited tests!';
-      case 'test_series':
-        return 'This test series is only available for Premium users.';
-      case 'previous_year':
-        return 'Previous year papers are only for Premium members.';
-      default:
-        return 'This feature is only available for Premium users.';
-    }
-  }
-
-  void showUpgradeConfirmationDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Upgrade Confirmation'),
-        content: Text(
-          'You are about to upgrade to Premium on the $_selectedPlanName plan.\n\nYou will have unlimited access to all features!',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              // Process payment
-              Navigator.pop(context);
-              showPaymentProcessing();
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF5B4EE8),
-            ),
-            child: const Text('Proceed to Payment'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String get _selectedPlanName {
-    switch (selectedPlan) {
-      case 'monthly':
-        return 'Monthly (₹99)';
-      case 'quarterly':
-        return 'Quarterly (₹249)';
-      case 'yearly':
-        return 'Yearly (₹799)';
-      default:
-        return 'Monthly';
-    }
-  }
-
-  void showPaymentProcessing() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        title: const Text('Processing Payment'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const CircularProgressIndicator(),
-            const SizedBox(height: 16),
-            Text(
-              'Upgrading to $_selectedPlanName...',
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 13),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    // Simulate payment processing
-    Future.delayed(const Duration(seconds: 2), () {
-      Navigator.pop(context); // Close processing dialog
-      showPaymentSuccess();
-    });
-  }
-
-  void showPaymentSuccess() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        title: const Text('Success!'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              '✅',
-              style: TextStyle(fontSize: 48),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'You are now Premium!',
+          child: Center(
+            child: Text(
+              icon,
               style: TextStyle(
-                fontSize: 18,
+                fontSize: icon == '∞' ? 20 : 18,
+                color: color,
                 fontWeight: FontWeight.bold,
               ),
-              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Enjoy unlimited access to all features.',
-              style: TextStyle(fontSize: 13, color: Colors.grey[700]),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-        actions: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context); // Close success dialog
-              Navigator.pop(context); // Close premium screen
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-            ),
-            child: const Text('Great!'),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class PricingPlanCard extends StatelessWidget {
-  final String name;
-  final String price;
-  final String period;
-  final String? savings;
-  final bool isSelected;
-  final bool isBestValue;
-  final VoidCallback onTap;
-
-  const PricingPlanCard({
-    Key? key,
-    required this.name,
-    required this.price,
-    required this.period,
-    this.savings,
-    required this.isSelected,
-    this.isBestValue = false,
-    required this.onTap,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF5B4EE8).withOpacity(0.1) : Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected ? const Color(0xFF5B4EE8) : Colors.grey[300]!,
-            width: isSelected ? 2 : 1,
           ),
         ),
-        child: Stack(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      name,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    Container(
-                      width: 20,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: isSelected
-                              ? const Color(0xFF5B4EE8)
-                              : Colors.grey[400]!,
-                          width: 2,
-                        ),
-                        color: isSelected
-                            ? const Color(0xFF5B4EE8)
-                            : Colors.transparent,
-                      ),
-                      child: isSelected
-                          ? const Center(
-                              child: Icon(
-                                Icons.check,
-                                color: Colors.white,
-                                size: 12,
-                              ),
-                            )
-                          : null,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  children: [
-                    Text(
-                      price,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF5B4EE8),
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      period,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ],
-                ),
-                if (savings != null) ...[
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.green[100]!,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      savings!,
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green[700]!,
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-            if (isBestValue)
-              Positioned(
-                top: -10,
-                right: 16,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.orange,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Text(
-                    'Best Value',
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-          ],
+              Text(
+                subtitle,
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+            ],
+          ),
         ),
-      ),
+        Icon(Icons.check_circle, color: color, size: 20),
+      ],
+    );
+  }
+
+  Widget _buildPricingCard(
+    BuildContext context, {
+    required String name,
+    required String price,
+    required String period,
+    required String? savings,
+    required Color color,
+    required bool isDark,
+    required bool isBestValue,
+  }) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: color.withOpacity(0.4),
+              width: isBestValue ? 2 : 1,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    period,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                  if (savings != null) ...[
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.green.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        savings,
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.green,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+              Text(
+                price,
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: color,
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (isBestValue)
+          Positioned(
+            top: -10,
+            right: 16,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 4,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.orange,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Text(
+                '⭐ Best Value',
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }
