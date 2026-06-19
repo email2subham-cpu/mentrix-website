@@ -1,118 +1,138 @@
 import 'package:flutter/material.dart';
 
 class PaymentSubscriptionScreen extends StatefulWidget {
-  const PaymentSubscriptionScreen({Key? key}) : super(key: key);
+  const PaymentSubscriptionScreen({super.key});
 
   @override
   State<PaymentSubscriptionScreen> createState() =>
       _PaymentSubscriptionScreenState();
 }
 
-class _PaymentSubscriptionScreenState extends State<PaymentSubscriptionScreen> {
-  String selectedPlan = 'monthly'; // monthly, quarterly, yearly
-  String selectedPaymentMethod = 'upi'; // upi, card, wallet
+class _PaymentSubscriptionScreenState
+    extends State<PaymentSubscriptionScreen> {
+  String selectedPlan = 'quarterly';
+  String selectedPaymentMethod = 'upi';
+  bool isProcessing = false;
 
-  // Mock subscription data
-  late Map<String, dynamic> subscriptionData;
-
-  @override
-  void initState() {
-    super.initState();
-    loadSubscriptionData();
-  }
-
-  void loadSubscriptionData() {
-    subscriptionData = {
-      'currentStatus': 'Free',
-      'expiryDate': null,
-      'plans': [
-        {
-          'id': 'monthly',
-          'name': 'Monthly',
-          'price': 99,
-          'period': 'per month',
-          'savings': null,
-          'features': [
-            'Unlimited practice questions',
-            'Unlimited mock tests',
-            'Detailed performance analytics',
-            'Previous year papers',
-            'Video solutions',
-            'Priority support',
-            'Ad-free experience',
-          ],
-        },
-        {
-          'id': 'quarterly',
-          'name': 'Quarterly',
-          'price': 249,
-          'period': 'per 3 months',
-          'savings': 'Save 15%',
-          'isBestValue': true,
-          'features': [
-            'Unlimited practice questions',
-            'Unlimited mock tests',
-            'Detailed performance analytics',
-            'Previous year papers',
-            'Video solutions',
-            'Priority support',
-            'Ad-free experience',
-          ],
-        },
-        {
-          'id': 'yearly',
-          'name': 'Yearly',
-          'price': 799,
-          'period': 'per year',
-          'savings': 'Save 33%',
-          'features': [
-            'Unlimited practice questions',
-            'Unlimited mock tests',
-            'Detailed performance analytics',
-            'Previous year papers',
-            'Video solutions',
-            'Priority support',
-            'Ad-free experience',
-            'Offline downloads (coming soon)',
-          ],
-        },
+  final List<Map<String, dynamic>> plans = [
+    {
+      'id': 'monthly',
+      'name': 'Monthly',
+      'price': 99,
+      'period': '/month',
+      'savings': null,
+      'isBestValue': false,
+      'color': Colors.blue,
+      'features': [
+        'Unlimited practice questions',
+        'Unlimited mock tests',
+        'Performance analytics',
+        'Previous year papers',
+        'Priority support',
       ],
-    };
-  }
+    },
+    {
+      'id': 'quarterly',
+      'name': 'Quarterly',
+      'price': 249,
+      'period': '/3 months',
+      'savings': 'Save 16%',
+      'isBestValue': true,
+      'color': Colors.purple,
+      'features': [
+        'Unlimited practice questions',
+        'Unlimited mock tests',
+        'Performance analytics',
+        'Previous year papers',
+        'Video solutions',
+        'Priority support',
+        'Ad-free experience',
+      ],
+    },
+    {
+      'id': 'yearly',
+      'name': 'Yearly',
+      'price': 799,
+      'period': '/year',
+      'savings': 'Save 33%',
+      'isBestValue': false,
+      'color': Colors.green,
+      'features': [
+        'All Quarterly features',
+        'Offline downloads',
+        'Advanced analytics',
+        'Doubt support',
+        'Ad-free experience',
+      ],
+    },
+  ];
 
-  String getPlanPrice(String planId) {
-    final plan = subscriptionData['plans']
-        .firstWhere((p) => p['id'] == planId, orElse: () => null);
-    return plan != null ? plan['price'].toString() : '0';
-  }
+  final List<Map<String, dynamic>> paymentMethods = [
+    {
+      'id': 'upi',
+      'title': 'UPI Payment',
+      'subtitle': 'Google Pay, PhonePe, Paytm',
+      'icon': '📱',
+    },
+    {
+      'id': 'card',
+      'title': 'Credit/Debit Card',
+      'subtitle': 'Visa, Mastercard, RuPay',
+      'icon': '💳',
+    },
+    {
+      'id': 'wallet',
+      'title': 'Digital Wallet',
+      'subtitle': 'Paytm, Amazon Pay',
+      'icon': '👛',
+    },
+  ];
 
-  String getPlanPeriod(String planId) {
-    final plan = subscriptionData['plans']
-        .firstWhere((p) => p['id'] == planId, orElse: () => null);
-    return plan != null ? plan['period'] : '';
-  }
+  Map<String, dynamic> get selectedPlanData =>
+      plans.firstWhere((p) => p['id'] == selectedPlan);
 
   void proceedToPayment() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
         title: const Text('Confirm Payment'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Plan: ${selectedPlan.toUpperCase()}',
-              style: const TextStyle(fontWeight: FontWeight.bold),
+            _buildConfirmRow('Plan', selectedPlanData['name']),
+            const SizedBox(height: 8),
+            _buildConfirmRow('Amount', '₹${selectedPlanData['price']}'),
+            const SizedBox(height: 8),
+            _buildConfirmRow(
+              'Payment',
+              paymentMethods
+                  .firstWhere((p) => p['id'] == selectedPaymentMethod)['title'],
             ),
-            const SizedBox(height: 8),
-            Text('Amount: ₹${getPlanPrice(selectedPlan)}'),
-            const SizedBox(height: 8),
-            Text('Payment: ${selectedPaymentMethod.toUpperCase()}'),
             const SizedBox(height: 16),
-            const Text(
-              'Proceed with payment?',
-              style: TextStyle(fontWeight: FontWeight.bold),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.green.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.verified_user, color: Colors.green, size: 16),
+                  SizedBox(width: 8),
+                  Text(
+                    '7-day money back guarantee',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.green,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -127,7 +147,10 @@ class _PaymentSubscriptionScreenState extends State<PaymentSubscriptionScreen> {
               processPayment();
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
+              backgroundColor: const Color(0xFF5B4EE8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
             child: const Text('Pay Now'),
           ),
@@ -136,30 +159,54 @@ class _PaymentSubscriptionScreenState extends State<PaymentSubscriptionScreen> {
     );
   }
 
+  Widget _buildConfirmRow(String label, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(color: Colors.grey),
+        ),
+        Text(
+          value,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
+
   void processPayment() {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const Text('Processing Payment'),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const CircularProgressIndicator(),
-            const SizedBox(height: 16),
+            const CircularProgressIndicator(
+              color: Color(0xFF5B4EE8),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Processing Payment...',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
             Text(
-              'Processing ₹${getPlanPrice(selectedPlan)} payment...',
+              'Please wait while we process your ₹${selectedPlanData['price']} payment',
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 13),
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],
         ),
       ),
     );
 
-    // Simulate payment processing
     Future.delayed(const Duration(seconds: 2), () {
-      Navigator.pop(context); // Close processing dialog
+      Navigator.pop(context);
       showPaymentSuccess();
     });
   }
@@ -169,42 +216,78 @@ class _PaymentSubscriptionScreenState extends State<PaymentSubscriptionScreen> {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const Text('Success!'),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              '✅',
-              style: TextStyle(fontSize: 48),
-              textAlign: TextAlign.center,
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: Colors.green.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Center(
+                child: Text('✅', style: TextStyle(fontSize: 40)),
+              ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             const Text(
               'Payment Successful!',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
-              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
-            Text(
-              'You are now a Premium member.\nEnjoy unlimited access!',
-              style: TextStyle(fontSize: 13, color: Colors.grey[700]),
+            const Text(
+              'Welcome to Mentrix Premium!\nEnjoy unlimited access to all features.',
               textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey, fontSize: 13),
+            ),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF5B4EE8).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('👑', style: TextStyle(fontSize: 20)),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Premium Member - ${selectedPlanData['name']} Plan',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF5B4EE8),
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
         actions: [
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context); // Close success dialog
-              Navigator.pop(context); // Go back to previous screen
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('Start Learning! 🚀'),
             ),
-            child: const Text('Continue'),
           ),
         ],
       ),
@@ -213,156 +296,347 @@ class _PaymentSubscriptionScreenState extends State<PaymentSubscriptionScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Choose Plan'),
-        backgroundColor: const Color(0xFF5B4EE8),
+        title: const Text('Go Premium 👑'),
         elevation: 0,
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Current Status
+            // Header
             Container(
-              color: const Color(0xFF5B4EE8),
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [Color(0xFF5B4EE8), Color(0xFF7C6EFF)],
+                ),
+              ),
+              padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
+                  const Text('👑', style: TextStyle(fontSize: 48)),
+                  const SizedBox(height: 12),
                   const Text(
-                    'Current Plan',
+                    'Unlock Premium Features',
                     style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.white70,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    subscriptionData['currentStatus'],
-                    style: const TextStyle(
-                      fontSize: 28,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
+                    textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subscriptionData['expiryDate'] != null
-                        ? 'Expires on ${subscriptionData['expiryDate']}'
-                        : 'Upgrade to unlock premium features',
-                    style: const TextStyle(
-                      fontSize: 12,
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Get unlimited access to all questions, tests & more!',
+                    style: TextStyle(
+                      fontSize: 13,
                       color: Colors.white70,
                     ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Pricing Plans
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Choose Your Plan',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
+                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
 
-                  // Monthly Plan
-                  _buildPlanCard(
-                    'monthly',
-                    'Monthly',
-                    '₹99',
-                    'per month',
-                    null,
-                    false,
-                    [
-                      'Unlimited practice questions',
-                      'Unlimited mock tests',
-                      'Performance analytics',
-                      'Previous year papers',
-                      'Priority support',
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Quarterly Plan (Best Value)
-                  _buildPlanCard(
-                    'quarterly',
-                    'Quarterly',
-                    '₹249',
-                    'per 3 months',
-                    'Save 15%',
-                    true,
-                    [
-                      'Unlimited practice questions',
-                      'Unlimited mock tests',
-                      'Performance analytics',
-                      'Previous year papers',
-                      'Video solutions',
-                      'Priority support',
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-
-                  // Yearly Plan
-                  _buildPlanCard(
-                    'yearly',
-                    'Yearly',
-                    '₹799',
-                    'per year',
-                    'Save 33%',
-                    false,
-                    [
-                      'All Quarterly features',
-                      'Offline downloads',
-                      'Advanced analytics',
-                      'Doubt support',
+                  // Features Row
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildFeatureChip('∞ Questions'),
+                      _buildFeatureChip('∞ Tests'),
+                      _buildFeatureChip('📊 Analytics'),
                     ],
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 20),
+            // Plans
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Choose Your Plan',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ...plans.map((plan) {
+                    final isSelected = selectedPlan == plan['id'];
+                    final color = plan['color'] as Color;
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedPlan = plan['id'];
+                          });
+                        },
+                        child: Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? color.withOpacity(0.1)
+                                    : isDark
+                                        ? const Color(0xFF1A1A2E)
+                                        : Colors.white,
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: isSelected
+                                      ? color
+                                      : Colors.grey.withOpacity(0.3),
+                                  width: isSelected ? 2 : 1,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  // Radio
+                                  Container(
+                                    width: 22,
+                                    height: 22,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: isSelected
+                                            ? color
+                                            : Colors.grey,
+                                        width: 2,
+                                      ),
+                                      color: isSelected
+                                          ? color
+                                          : Colors.transparent,
+                                    ),
+                                    child: isSelected
+                                        ? const Icon(
+                                            Icons.check,
+                                            color: Colors.white,
+                                            size: 14,
+                                          )
+                                        : null,
+                                  ),
+                                  const SizedBox(width: 16),
 
-            // Payment Method Selection
+                                  // Plan Details
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          plan['name'],
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleLarge
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              '₹${plan['price']}',
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                                color: color,
+                                              ),
+                                            ),
+                                            Text(
+                                              plan['period'],
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall,
+                                            ),
+                                          ],
+                                        ),
+                                        if (plan['savings'] != null) ...[
+                                          const SizedBox(height: 4),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 8,
+                                              vertical: 2,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: Colors.green
+                                                  .withOpacity(0.1),
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                            ),
+                                            child: Text(
+                                              plan['savings'],
+                                              style: const TextStyle(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.green,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (plan['isBestValue'] == true)
+                              Positioned(
+                                top: -10,
+                                right: 16,
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.orange,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: const Text(
+                                    '⭐ Best Value',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ],
+              ),
+            ),
+
+            // Payment Method
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey[300]!),
+                  color: isDark ? const Color(0xFF1A1A2E) : Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.grey.withOpacity(0.2)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Payment Method',
-                      style: TextStyle(
-                        fontSize: 14,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    _buildPaymentOption('upi', '📱 UPI', 'Google Pay, PhonePe, etc'),
-                    const SizedBox(height: 10),
-                    _buildPaymentOption(
-                        'card', '💳 Credit/Debit Card', 'Visa, Mastercard, etc'),
-                    const SizedBox(height: 10),
-                    _buildPaymentOption('wallet', '👛 Digital Wallet',
-                        'PayTM, Amazon Pay, etc'),
+                    const SizedBox(height: 16),
+                    ...paymentMethods.map((method) {
+                      final isSelected = selectedPaymentMethod == method['id'];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedPaymentMethod = method['id'];
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? const Color(0xFF5B4EE8).withOpacity(0.1)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: isSelected
+                                    ? const Color(0xFF5B4EE8)
+                                    : Colors.grey.withOpacity(0.3),
+                                width: isSelected ? 2 : 1,
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Text(
+                                  method['icon'],
+                                  style: const TextStyle(fontSize: 24),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        method['title'],
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                      ),
+                                      Text(
+                                        method['subtitle'],
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  width: 20,
+                                  height: 20,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: isSelected
+                                          ? const Color(0xFF5B4EE8)
+                                          : Colors.grey,
+                                      width: 2,
+                                    ),
+                                    color: isSelected
+                                        ? const Color(0xFF5B4EE8)
+                                        : Colors.transparent,
+                                  ),
+                                  child: isSelected
+                                      ? const Icon(
+                                          Icons.check,
+                                          color: Colors.white,
+                                          size: 12,
+                                        )
+                                      : null,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
                   ],
                 ),
               ),
@@ -370,65 +644,22 @@ class _PaymentSubscriptionScreenState extends State<PaymentSubscriptionScreen> {
 
             const SizedBox(height: 20),
 
-            // Features Comparison
+            // Guarantee
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.blue[50],
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.blue[300]!),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Premium Features',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildFeatureItem('Unlimited Questions',
-                        'Access all practice questions'),
-                    const SizedBox(height: 10),
-                    _buildFeatureItem('Unlimited Tests',
-                        'Take as many mock tests as you want'),
-                    const SizedBox(height: 10),
-                    _buildFeatureItem('Video Solutions',
-                        'Learn from detailed video explanations'),
-                    const SizedBox(height: 10),
-                    _buildFeatureItem('Performance Analytics',
-                        'Track your progress in detail'),
-                    const SizedBox(height: 10),
-                    _buildFeatureItem(
-                        'Priority Support', 'Get help when you need it'),
-                    const SizedBox(height: 10),
-                    _buildFeatureItem('Ad-Free Experience',
-                        'Study without distractions'),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // Security & Guarantee
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.green[50],
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.green[300]!),
+                  color: Colors.green.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Colors.green.withOpacity(0.3),
+                  ),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.verified_user, color: Colors.green),
+                    const Icon(Icons.verified_user,
+                        color: Colors.green, size: 28),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
@@ -436,19 +667,17 @@ class _PaymentSubscriptionScreenState extends State<PaymentSubscriptionScreen> {
                         children: [
                           Text(
                             '7-Day Money Back Guarantee',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.green[900]!,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyLarge
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green,
+                                ),
                           ),
-                          const SizedBox(height: 2),
                           Text(
                             'Not satisfied? Get a full refund within 7 days.',
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: Colors.grey[700],
-                            ),
+                            style: Theme.of(context).textTheme.bodySmall,
                           ),
                         ],
                       ),
@@ -471,11 +700,11 @@ class _PaymentSubscriptionScreenState extends State<PaymentSubscriptionScreen> {
                     backgroundColor: const Color(0xFF5B4EE8),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   child: Text(
-                    'Subscribe Now - ₹${getPlanPrice(selectedPlan)}',
+                    'Subscribe Now - ₹${selectedPlanData['price']}',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -488,7 +717,7 @@ class _PaymentSubscriptionScreenState extends State<PaymentSubscriptionScreen> {
 
             const SizedBox(height: 12),
 
-            // Continue as Free User
+            // Continue Free
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: SizedBox(
@@ -502,7 +731,7 @@ class _PaymentSubscriptionScreenState extends State<PaymentSubscriptionScreen> {
                       width: 2,
                     ),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   child: const Text(
@@ -524,254 +753,22 @@ class _PaymentSubscriptionScreenState extends State<PaymentSubscriptionScreen> {
     );
   }
 
-  Widget _buildPlanCard(
-    String planId,
-    String name,
-    String price,
-    String period,
-    String? savings,
-    bool isBestValue,
-    List<String> features,
-  ) {
-    final isSelected = selectedPlan == planId;
-
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedPlan = planId;
-        });
-      },
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF5B4EE8).withOpacity(0.1) : Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected ? const Color(0xFF5B4EE8) : Colors.grey[300]!,
-            width: isSelected ? 2 : 1,
-          ),
-        ),
-        child: Stack(
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      name,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    Container(
-                      width: 20,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: isSelected
-                              ? const Color(0xFF5B4EE8)
-                              : Colors.grey[400]!,
-                          width: 2,
-                        ),
-                        color: isSelected
-                            ? const Color(0xFF5B4EE8)
-                            : Colors.transparent,
-                      ),
-                      child: isSelected
-                          ? const Center(
-                              child: Icon(
-                                Icons.check,
-                                color: Colors.white,
-                                size: 12,
-                              ),
-                            )
-                          : null,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                  textBaseline: TextBaseline.alphabetic,
-                  children: [
-                    Text(
-                      price,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF5B4EE8),
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      period,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ],
-                ),
-                if (savings != null) ...[
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.green[100],
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      savings,
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green[700],
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-            if (isBestValue)
-              Positioned(
-                top: -10,
-                right: 16,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.orange,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Text(
-                    'Best Value',
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-          ],
+  Widget _buildFeatureChip(String label) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.3)),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
         ),
       ),
-    );
-  }
-
-  Widget _buildPaymentOption(String id, String title, String subtitle) {
-    final isSelected = selectedPaymentMethod == id;
-
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedPaymentMethod = id;
-        });
-      },
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF5B4EE8).withOpacity(0.1) : Colors.white,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: isSelected ? const Color(0xFF5B4EE8) : Colors.grey[300]!,
-            width: isSelected ? 2 : 1,
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ],
-            ),
-            Container(
-              width: 18,
-              height: 18,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: isSelected
-                      ? const Color(0xFF5B4EE8)
-                      : Colors.grey[400]!,
-                  width: 2,
-                ),
-                color: isSelected
-                    ? const Color(0xFF5B4EE8)
-                    : Colors.transparent,
-              ),
-              child: isSelected
-                  ? const Center(
-                      child: Icon(
-                        Icons.check,
-                        color: Colors.white,
-                        size: 10,
-                      ),
-                    )
-                  : null,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFeatureItem(String title, String subtitle) {
-    return Row(
-      children: [
-        const Icon(Icons.check_circle, color: Colors.green, size: 18),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                subtitle,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: Colors.grey[600],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }
