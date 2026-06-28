@@ -356,38 +356,66 @@ class _QuestionScreenState extends State<QuestionScreen> {
 
               // Explanation (show after answer)
               if (showResult) ...[
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.amber.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: Colors.amber.withOpacity(0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Explanation',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        languageProvider.getQuestionText(
-                          question['explanation']['english'],
-                          question['explanation']['bengali'],
-                        ),
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 32),
-              ],
+  Container(
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: Colors.amber.withOpacity(0.1),
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(
+        color: Colors.amber.withOpacity(0.3),
+        width: 1,
+      ),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Explanation',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          languageProvider.getQuestionText(
+            question['explanation']['english'],
+            question['explanation']['bengali'],
+          ),
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+      ],
+    ),
+  ),
+  const SizedBox(height: 12),
+
+  // REPORT BUTTON - ADD THIS
+  SizedBox(
+    width: double.infinity,
+    child: OutlinedButton.icon(
+      onPressed: () => showReportDialog(context),
+      icon: const Icon(
+        Icons.flag_outlined,
+        color: Colors.red,
+        size: 16,
+      ),
+      label: const Text(
+        'Report Question',
+        style: TextStyle(
+          color: Colors.red,
+          fontSize: 13,
+        ),
+      ),
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        side: const BorderSide(color: Colors.red, width: 1),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    ),
+  ),
+  const SizedBox(height: 32),
+],
 
               // Buttons
               if (!showResult)
