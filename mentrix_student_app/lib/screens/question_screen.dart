@@ -38,7 +38,6 @@ class _QuestionScreenState extends State<QuestionScreen> {
   }
 
   void loadQuestions() {
-    // Mock questions with Bengali translations
     questions = [
       {
         'english': 'What is the capital of France?',
@@ -91,7 +90,8 @@ class _QuestionScreenState extends State<QuestionScreen> {
   void submitAnswer() {
     if (selectedOptionIndex == null) {
       skippedAnswers++;
-    } else if (selectedOptionIndex == questions[currentQuestionIndex]['correctIndex']) {
+    } else if (selectedOptionIndex ==
+        questions[currentQuestionIndex]['correctIndex']) {
       correctAnswers++;
       showAnswerFeedback(true);
     } else {
@@ -120,25 +120,83 @@ class _QuestionScreenState extends State<QuestionScreen> {
       currentQuestionIndex++;
       setState(() {});
     } else {
-      // Test completed
       Navigator.pushReplacement(
-  context,
-  MaterialPageRoute(
-    builder: (context) => ResultsScreen(
-      examType: widget.examType,
-      correctAnswers: correctAnswers,
-      wrongAnswers: wrongAnswers,
-      skippedQuestions: skippedAnswers,
-      totalQuestions: questions.length,
-      totalTimeSpent: stopwatch.elapsed.inSeconds,
-      isTestSeries: widget.isTestSeries,
-      testName: '${widget.examType} Practice',
-    ),
-  ),
-);
-   }
+        context,
+        MaterialPageRoute(
+          builder: (context) => ResultsScreen(
+            examType: widget.examType,
+            correctAnswers: correctAnswers,
+            wrongAnswers: wrongAnswers,
+            skippedQuestions: skippedAnswers,
+            totalQuestions: questions.length,
+            totalTimeSpent: stopwatch.elapsed.inSeconds,
+            isTestSeries: widget.isTestSeries,
+            testName: '${widget.examType} Practice',
+          ),
+        ),
+      );
+    }
   }
-  
+
+  void showReportDialog(BuildContext context) {
+    final TextEditingController reportController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Report Question'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'What is wrong with this question?',
+              style: TextStyle(fontSize: 13, color: Colors.grey),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: reportController,
+              maxLines: 4,
+              decoration: InputDecoration(
+                hintText: 'Describe the problem...',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (reportController.text.trim().isEmpty) return;
+              Navigator.pop(context);
+              await submitReport(reportController.text.trim());
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+            ),
+            child: const Text('Submit Report'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> submitReport(String message) async {
+    // TODO: Connect to Supabase in Phase 2
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('✅ Report submitted! Thank you for your feedback.'),
+        backgroundColor: Colors.green,
+        duration: Duration(seconds: 3),
+      ),
+    );
+  }
+
   @override
   void dispose() {
     stopwatch.stop();
@@ -148,7 +206,6 @@ class _QuestionScreenState extends State<QuestionScreen> {
   @override
   Widget build(BuildContext context) {
     final languageProvider = Provider.of<LanguageProvider>(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final question = questions[currentQuestionIndex];
 
     String questionText = languageProvider.getQuestionText(
@@ -212,15 +269,15 @@ class _QuestionScreenState extends State<QuestionScreen> {
                   Text(
                     'Question ${currentQuestionIndex + 1}/${questions.length}',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   Text(
                     '${((currentQuestionIndex + 1) / questions.length * 100).toStringAsFixed(0)}%',
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orange,
-                    ),
+                          fontWeight: FontWeight.bold,
+                          color: Colors.orange,
+                        ),
                   ),
                 ],
               ),
@@ -239,7 +296,7 @@ class _QuestionScreenState extends State<QuestionScreen> {
 
               const SizedBox(height: 32),
 
-              // Question Text with Glassmorphism
+              // Question Text
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -253,9 +310,9 @@ class _QuestionScreenState extends State<QuestionScreen> {
                 child: Text(
                   questionText,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    height: 1.5,
-                  ),
+                        fontWeight: FontWeight.bold,
+                        height: 1.5,
+                      ),
                 ),
               ),
 
@@ -287,11 +344,13 @@ class _QuestionScreenState extends State<QuestionScreen> {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12),
                     child: GestureDetector(
-                      onTap: showResult ? null : () {
-                        setState(() {
-                          selectedOptionIndex = index;
-                        });
-                      },
+                      onTap: showResult
+                          ? null
+                          : () {
+                              setState(() {
+                                selectedOptionIndex = index;
+                              });
+                            },
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
@@ -335,13 +394,17 @@ class _QuestionScreenState extends State<QuestionScreen> {
                             Expanded(
                               child: Text(
                                 optionText,
-                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.w500,
+                                    ),
                               ),
                             ),
                             if (showResult && isCorrect)
-                              const Icon(Icons.check_circle, color: Colors.green)
+                              const Icon(Icons.check_circle,
+                                  color: Colors.green)
                             else if (showResult && isSelected && !isCorrect)
                               const Icon(Icons.cancel, color: Colors.red),
                           ],
@@ -354,68 +417,69 @@ class _QuestionScreenState extends State<QuestionScreen> {
 
               const SizedBox(height: 32),
 
-              // Explanation (show after answer)
+              // Explanation + Report Button (show after answer)
               if (showResult) ...[
-  Container(
-    padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: Colors.amber.withOpacity(0.1),
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(
-        color: Colors.amber.withOpacity(0.3),
-        width: 1,
-      ),
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Explanation',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          languageProvider.getQuestionText(
-            question['explanation']['english'],
-            question['explanation']['bengali'],
-          ),
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
-      ],
-    ),
-  ),
-  const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.amber.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.amber.withOpacity(0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Explanation',
+                        style:
+                            Theme.of(context).textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        languageProvider.getQuestionText(
+                          question['explanation']['english'],
+                          question['explanation']['bengali'],
+                        ),
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
 
-  // REPORT BUTTON - ADD THIS
-  SizedBox(
-    width: double.infinity,
-    child: OutlinedButton.icon(
-      onPressed: () => showReportDialog(context),
-      icon: const Icon(
-        Icons.flag_outlined,
-        color: Colors.red,
-        size: 16,
-      ),
-      label: const Text(
-        'Report Question',
-        style: TextStyle(
-          color: Colors.red,
-          fontSize: 13,
-        ),
-      ),
-      style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        side: const BorderSide(color: Colors.red, width: 1),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
-    ),
-  ),
-  const SizedBox(height: 32),
-],
+                // Report Question Button
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () => showReportDialog(context),
+                    icon: const Icon(
+                      Icons.flag_outlined,
+                      color: Colors.red,
+                      size: 16,
+                    ),
+                    label: const Text(
+                      'Report Question',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 13,
+                      ),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      side: const BorderSide(color: Colors.red, width: 1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 32),
+              ],
 
               // Buttons
               if (!showResult)
